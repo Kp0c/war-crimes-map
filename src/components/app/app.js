@@ -1,5 +1,5 @@
 import template from './app.html?raw';
-import styles from './app.css?raw';
+import styles from './app.css?inline';
 
 const templateElement = document.createElement('template');
 templateElement.innerHTML = template;
