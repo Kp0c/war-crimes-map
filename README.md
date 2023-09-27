@@ -31,6 +31,7 @@ Components are using `wcm-` prefix that means "war crimes map."
 - [ ] Create a List View
 - [ ] Add Dots animation
 - [ ] Add mobile design
+- [ ] Documentation
 
 ## How to run
 1. Clone the repo
