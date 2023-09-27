@@ -12,13 +12,15 @@ I'm using component-based approach with custom elements. All components are in s
 Components are using `wcm-` prefix that means "war crimes map."
 
 - The `wcm-app` component is the main component that is containing the whole app.
+- The `wcm-map` component is responsible for the map
 
 `main.js` files defines all components
 
 ## Available functionality
+- Showing a map of Ukraine
 
 ## TODO
-- [ ] Show a map on full Screen
+- [x] Show a map on full Screen
 - [ ] Add left sidebar UI
 - [ ] Add right (empty for now) sidebar UI
 - [ ] Add the Filters section UI

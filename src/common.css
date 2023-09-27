@@ -1,0 +1,23 @@
+html, body, wcm-app {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+html, body {
+  /* this background color matches the map color scheme, it will be look good when user zoomed out too much,
+   so image does not fit anymore */
+  background-color: #444444;
+}
+
+wcm-app {
+  display: block;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
