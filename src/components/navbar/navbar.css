@@ -1,12 +1,5 @@
 @import "../../styles/common.css";
 
-:host {
-  position: fixed;
-  height: 100%;
-  width: 60px;
-  background-color: var(--backgound-black-color);
-}
-
 nav {
   display: flex;
   flex-direction: column;

@@ -1,1 +1,16 @@
 @import "../../styles/common.css";
+
+wcm-navbar {
+  position: fixed;
+  height: 100%;
+  width: 60px;
+  background-color: var(--backgound-black-color);
+}
+
+wcm-filter {
+  position: fixed;
+  height: 100%;
+  width: min(33%, 400px);
+  background-color: var(--background-white-color);
+  right: 0;
+}
