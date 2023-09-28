@@ -1,1 +1,51 @@
-@import "src/styles/common.css";
+@import "../../styles/common.css";
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 30px 24px;
+}
+
+hr {
+  margin: 0;
+  height: 1px;
+  background-color: var(--light-gray-color);
+  border: none;
+}
+
+.filters-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.filters-btn span {
+  color: var(--primary-color);
+  font-family: "e-Ukraine", serif;
+  font-size: 11px;
+}
+
+.filters-btn svg {
+  color: var(--primary-color);
+}
+
+.search-box {
+  padding: 12px;
+  border-radius: 100px;
+  border: 1px solid var(--dark-gray-color);
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  width: 100%;
+  line-height: 24px;
+  font-size: 16px;
+}
+

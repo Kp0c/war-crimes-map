@@ -2,7 +2,8 @@
   --primary-color: #F0552E;
   --backgound-black-color: #1A1A1A;
   --background-white-color: #FFF;
-  --secondary-color: #EBEBEB;
+  --light-gray-color: #EBEBEB;
+  --dark-gray-color: #999;
 
   /* this  color matches the map color scheme, it will be look good when user zoomed out too much,
    so image does not fit anymore */

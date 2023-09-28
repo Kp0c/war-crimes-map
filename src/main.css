@@ -8,3 +8,10 @@ html, body {
 html, body {
   background-color: var(--map-complementary-color);
 }
+
+@font-face {
+  font-family: "e-Ukraine";
+  src: url("./assets/fonts/e-ukraine-regular-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}

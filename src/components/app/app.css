@@ -10,7 +10,7 @@ wcm-navbar {
 wcm-filter {
   position: fixed;
   height: 100%;
-  width: min(33%, 400px);
+  width: max(min(45%, 300px), 500px);
   background-color: var(--background-white-color);
   right: 0;
 }
