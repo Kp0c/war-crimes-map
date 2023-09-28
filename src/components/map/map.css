@@ -1,3 +1,13 @@
+@import "../../styles/common.css";
+
+:host {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 0;
+  overflow: hidden;
+}
+
 canvas {
   display: block;
 }

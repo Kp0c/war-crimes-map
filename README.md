@@ -13,6 +13,7 @@ Components are using `wcm-` prefix that means "war crimes map."
 
 - The `wcm-app` component is the main component that is containing the whole app.
 - The `wcm-map` component is responsible for the map
+- The `wcm-navbar` component is responsible for the navigation bar
 
 `main.js` files defines all components
 
@@ -21,8 +22,9 @@ Components are using `wcm-` prefix that means "war crimes map."
 
 ## TODO
 - [x] Show a map on full Screen
-- [ ] Add left sidebar UI
+- [x] Add left sidebar UI
 - [ ] Add right (empty for now) sidebar UI
+- [ ] Add the search section UI
 - [ ] Add the Filters section UI
 - [ ] Add Filters functionality (Working crime filter)
 - [ ] Add events to the map (The map displays all the data)
@@ -32,6 +34,7 @@ Components are using `wcm-` prefix that means "war crimes map."
 - [ ] Add Dots animation
 - [ ] Add mobile design
 - [ ] Documentation
+- [ ] Test deployment
 
 ## How to run
 1. Clone the repo
