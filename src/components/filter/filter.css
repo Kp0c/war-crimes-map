@@ -1,5 +1,10 @@
 @import "../../styles/common.css";
 
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
 .search-container {
   display: flex;
   align-items: center;
@@ -49,3 +54,87 @@ hr {
   font-size: 16px;
 }
 
+.filters-main-container {
+  padding: 20px 48px;
+  overflow-y: auto;
+}
+
+.filters-container {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.crime-types {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.crime-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.crime-field .crime-name {
+  line-height: 24px;
+  font-size: 14px;
+}
+
+.crime-field .crime-number {
+  opacity: .3;
+  font-size: 14px;
+}
+
+select {
+  width: 100%;
+}
+
+.result {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.result span {
+  color: var(--primary-color);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.result span#result-number {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.chip.murder {
+  background-color: var(--black-color);
+  color: white;
+}
+
+.chip.state {
+  border: 1px var(--black-color) solid;
+  background-color: white;
+}
+
+.actions {
+  display: flex;
+  gap: 15px;
+}
+
+.actions button {
+  flex: 1;
+}
+
+button#clear {
+  display: inline-flex;
+  gap: 6px;
+  background-color: white;
+}
+
+button#apply {
+  background-color: var(--black-color);
+  color: white;
+}

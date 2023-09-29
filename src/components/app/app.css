@@ -4,7 +4,7 @@ wcm-navbar {
   position: fixed;
   height: 100%;
   width: 60px;
-  background-color: var(--backgound-black-color);
+  background-color: var(--black-color);
 }
 
 wcm-filter {

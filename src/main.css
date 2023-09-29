@@ -3,15 +3,47 @@ html, body {
   padding: 0;
   width: 100%;
   height: 100%;
+  background-color: var(--map-complementary-color);
 }
 
-html, body {
-  background-color: var(--map-complementary-color);
+@font-face {
+  font-family: "e-Ukraine";
+  src: url("./assets/fonts/e-ukraine-bold-webfont.woff") format("woff");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "e-Ukraine";
+  src: url("./assets/fonts/e-ukraine-medium-webfont.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
 }
 
 @font-face {
   font-family: "e-Ukraine";
   src: url("./assets/fonts/e-ukraine-regular-webfont.woff") format("woff");
   font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "e-Ukraine";
+  src: url("./assets/fonts/e-ukraine-light-webfont.woff") format("woff");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "e-Ukraine";
+  src: url("./assets/fonts/e-ukraine-thin-webfont.woff") format("woff");
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "e-Ukraine";
+  src: url("./assets/fonts/e-ukraine-ultralight-webfont.woff") format("woff");
+  font-weight: 100;
   font-style: normal;
 }

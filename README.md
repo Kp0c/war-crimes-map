@@ -26,7 +26,7 @@ Components are using `wcm-` prefix that means "war crimes map."
 - [x] Add left sidebar UI
 - [x] Add right (empty for now) sidebar UI
 - [x] Add the search section UI
-- [ ] Add the Filters section UI
+- [x] Add the Filters section UI
 - [ ] Add events to the map (The map displays all the data)
 - [ ] Add the list of crime types at the bottom
 - [ ] Add Filters functionality (Working crime filter)

@@ -7,3 +7,73 @@
 :host {
   display: block;
 }
+
+h1 {
+  color: var(--black-color);
+  font-size: 20px;
+  font-family: e-Ukraine, serif;
+  font-weight: 500;
+  line-height: 40px;
+  word-wrap: break-word
+}
+
+h2 {
+  color: var(--black-color);
+  font-size: 16px;
+  font-family: e-Ukraine, serif;
+  font-weight: 500;
+  line-height: 24px;
+  word-wrap: break-word
+}
+
+span {
+  font-family: "e-Ukraine", serif;
+  color: var(--black-color);
+}
+
+input[type="checkbox"] {
+  height: 20px;
+  width: 20px;
+  accent-color: var(--primary-color);
+}
+
+select {
+  padding: 8px 10px 8px 20px;
+  border-radius: 100px;
+  border: 1px var(--light-gray-color) solid;
+  color: var(--black-color);
+  font-size: 14px;
+  font-family: e-Ukraine, serif;
+  font-weight: 300;
+  line-height: 24px;
+  word-wrap: break-word;
+
+  background: url("src/assets/images/select-arrow.svg") no-repeat calc(100% - 0.75rem) center;
+  appearance: none;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.chip {
+  padding: 4px 12px;
+  background: var(--light-gray-color);
+  font-family: "e-Ukraine", serif;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--black-color);
+  border-radius: 50px;
+  display: inline-flex;
+}
+
+button {
+  padding: 12px 24px;
+  border: 1px var(--black-color) solid;
+  border-radius: 60px;
+  font-family: "e-Ukraine", serif;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--black-color);
+}
