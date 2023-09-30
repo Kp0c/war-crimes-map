@@ -1,8 +1,9 @@
 import template from './map.html?raw';
 import styles from './map.css?inline';
 import mapUrl from '/src/assets/images/map.png';
-import { MAP_BOUNDARIES, MAP_BOUNDARIES_RANGES } from '../../constants.js';
+import { CRIME_TYPE_BORDER_REQUIRED, CRIME_TYPE_TO_COLOR_MAP, DIFFUSE_AMOUNT_PX, MAP_BOUNDARIES, MAP_BOUNDARIES_RANGES } from '../../constants.js';
 import { MathHelper } from '../../helpers/math.helper.js';
+import { SCALE } from '../../enums.js';
 
 const templateElement = document.createElement('template');
 templateElement.innerHTML = template;
@@ -51,7 +52,7 @@ export class Map extends HTMLElement {
 
   /**
    *
-   * @type {{x: number, y: number}[]}
+   * @type {{x: number, y: number, size: number, color: string, borderRequired: boolean}[]}
    */
   #eventDots = [];
 
@@ -108,15 +109,26 @@ export class Map extends HTMLElement {
       this.#setDefaultScale();
     }
 
+    ctx.globalAlpha = 1;
+
     ctx.drawImage(this.#mapImg, 0, 0, this.#mapImg.width, this.#mapImg.height);
 
-    // this.#eventDots.forEach((dot) => {
-    //   ctx.beginPath();
-    //   ctx.arc(dot.x, dot.y, 1, 0, 2 * Math.PI);
-    //   ctx.fillStyle = '#C00000';
-    //   ctx.fill();
-    //   ctx.closePath();
-    // });
+    ctx.globalAlpha = 0.7;
+
+    this.#eventDots.forEach((dot) => {
+      ctx.beginPath();
+      ctx.arc(dot.x, dot.y, dot.size, 0, 2 * Math.PI);
+      ctx.fillStyle = dot.color;
+      ctx.fill();
+
+      if (dot.borderRequired) {
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      ctx.closePath();
+    });
   }
 
   /**
@@ -124,7 +136,7 @@ export class Map extends HTMLElement {
    *
    * @private
    * @param {CrimeEvent[]} events events to transform
-   * @returns {{x: number, y: number}[]} array of dots
+   * @returns {{x: number, y: number, size: number, color: string, borderRequired: boolean}[]} array of dots
    */
   #eventsToDots(events) {
     return events
@@ -133,9 +145,15 @@ export class Map extends HTMLElement {
         const x = (event.lon - MAP_BOUNDARIES.lonMin) / MAP_BOUNDARIES_RANGES.lonRange * this.#canvas.width;
         const y = this.#canvas.height- (event.lat - MAP_BOUNDARIES.latMin) / MAP_BOUNDARIES_RANGES.latRange * this.#canvas.height;
 
+        const diffusedX = x + Math.random() * DIFFUSE_AMOUNT_PX - DIFFUSE_AMOUNT_PX / 2;
+        const diffusedY = y + Math.random() * DIFFUSE_AMOUNT_PX - DIFFUSE_AMOUNT_PX / 2;
+
         return {
-          x,
-          y
+          x: diffusedX,
+          y: diffusedY,
+          size: Math.log2(event.amount) * 2,
+          color: CRIME_TYPE_TO_COLOR_MAP[event.affectedType],
+          borderRequired: CRIME_TYPE_BORDER_REQUIRED[event.affectedType] ?? false,
         };
       });
   }
@@ -185,13 +203,27 @@ export class Map extends HTMLElement {
 
       const newScale = MathHelper.clamp(this.#currentScale - delta, 0.2, 5);
 
+      if (this.#currentScale === newScale) {
+        return;
+      }
+
       // Calculate the new offsets, scale from the cursor's position
       this.#currentOffset.x +=
         mouseX * (1 - newScale / this.#currentScale);
       this.#currentOffset.y +=
         mouseY * (1 - newScale / this.#currentScale);
 
+      const previousScaleLevel = this.#determineScaleLevel();
       this.#currentScale = newScale;
+      const currentScaleLevel = this.#determineScaleLevel();
+
+      if (previousScaleLevel !== currentScaleLevel) {
+        this.dispatchEvent(new CustomEvent('scale-change', {
+          detail: {
+            scale: currentScaleLevel,
+          }
+        }));
+      }
 
       this.#applyTransformProps();
 
@@ -239,5 +271,20 @@ export class Map extends HTMLElement {
   #applyTransformProps() {
     this.#canvas.style.transform = `translate(${this.#currentOffset.x}px, ${this.#currentOffset.y}px) scale(${this.#currentScale})`;
     this.#canvas.style.transformOrigin = 'top left';
+  }
+
+  /**
+   * Determines the current scale level based on the current scale.
+   *
+   * @returns {SCALE}
+   */
+  #determineScaleLevel() {
+    if (this.#currentScale > 4) {
+      return SCALE.CITY;
+    } else if (this.#currentScale > 2) {
+      return SCALE.DISTRICT;
+    } else {
+      return SCALE.REGION;
+    }
   }
 }

@@ -33,6 +33,9 @@ Few more general files:
   - When it is a small scale, it shows regions
   - When it is a medium scale, it shows districts
   - When it is a large scale, it shows cities
+- Show different events in different colors on map
+- For improved UX, on loading we take a bit more time to map all events to the cities, districts and regions. So, when user started to use applciation he 
+  will see no lags.
 
 ## Geocoding
 ### General
@@ -44,6 +47,9 @@ In the `data` folder, you can find the following files:
 These files were created by taking the [geonames database](https://download.geonames.org/export/dump/) and converting them into better format for the project.
 Ideally, it should be stored together with coordinates, but we cannot change the data inside `events.json`, so we have what we have :)
 
+### Mapping lat/lng to the region/district/city
+With `geokdbush-tk`, `kdbush` libraries and data from geonames database, we can find the closest city/village to the lat/lng coordinates.
+
 ## TODO
 - [x] Show a map on full Screen
 - [x] Add left sidebar UI
@@ -51,16 +57,26 @@ Ideally, it should be stored together with coordinates, but we cannot change the
 - [x] Add the search section UI
 - [x] Add the Filters section UI
 - [x] Add events to the map (The map displays all the data)
-- [ ] Create grouping of events. Scale X -> show regions. Scale Y -> show ADM2, Scale Z -> show cities 
+- [x] Create grouping of events. Scale X -> show regions. Scale Y -> show ADM2, Scale Z -> show cities 
 - [ ] Add the list of crime types at the bottom
+- [ ] Show amount on the event
 - [ ] Add Filters functionality (Working crime filter)
 - [x] Allow the map to be resized
 - [ ] Create a List View
 - [ ] Add Dots animation
 - [ ] Add mobile design
 - [ ] Documentation
-- [ ] Use correct fonts
+- [x] Use correct fonts
 - [ ] Test deployment
+- [ ] (Optional) improve scaling
+- [ ] (Optional) extract data processing to the service worker to improve performance
+
+## What I'd change if I had more time
+- I'd clusterize the events smarter.
+  Because we're clusterizing by the city, district, region, some dots are pretty far from their actual position until the user 
+  zoom in
+- Improve performance of mapping. Not sure what we can do here, because we need to map tens of thousands events on tens of thousands cities.
+- Do better scaling. With the current scaling approach, zoomed in version looks very ugly
 
 ## How to run
 1. Clone the repo

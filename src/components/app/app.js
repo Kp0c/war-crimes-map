@@ -36,6 +36,14 @@ export class App extends HTMLElement {
     setTimeout(() => {
       this.#eventsService.init(eventsUrl, namesUrl).catch(console.error);
     }, 0);
+
+    this.#mapComponent.addEventListener('scale-change', (event) => {
+      const {scale} = event.detail;
+
+      this.#eventsService.setScaleLevel(scale);
+    }, {
+      signal: this.#abortController.signal,
+    });
   }
 
   disconnectedCallback() {
