@@ -17,9 +17,20 @@ Components are using `wcm-` prefix that means "war crimes map."
 - The `wcm-filter` component is responsible for the search and filter area
 
 `main.js` files defines all components
+`constants.js` contains generic constants for the app.
 
 ## Available functionality
 - Showing a map of Ukraine
+
+## Geocoding
+### General
+In the `data` folder, you can find the following files:
+- `ADM1.json` - first-order administrative division. A primary administrative division of a country, such as a state in the United States
+- `ADM2.json` - second-order administrative division. A subdivision of a first-order administrative division
+- `PPL.json` - populated place. A city, town, village, or another agglomeration of buildings where people live and work
+
+These files were created by taking the [geonames database](https://download.geonames.org/export/dump/) and converting them into better format for the project.
+Ideally, it should be stored together with coordinates, but we cannot change the data inside `events.json`, so we have what we have :)
 
 ## TODO
 - [x] Show a map on full Screen
@@ -27,7 +38,8 @@ Components are using `wcm-` prefix that means "war crimes map."
 - [x] Add right (empty for now) sidebar UI
 - [x] Add the search section UI
 - [x] Add the Filters section UI
-- [ ] Add events to the map (The map displays all the data)
+- [x] Add events to the map (The map displays all the data)
+- [ ] Create grouping of events. Scale X -> show regions. Scale Y -> show ADM2, Scale Z -> show cities 
 - [ ] Add the list of crime types at the bottom
 - [ ] Add Filters functionality (Working crime filter)
 - [ ] Allow the map to be resized
@@ -43,3 +55,8 @@ Components are using `wcm-` prefix that means "war crimes map."
 1. Clone the repo
 2. Run `npm install`
 3. Run `npm run dev`
+
+## How to run test
+1. Run `npm run test`
+
+Yeap, it is THAT simple :D
