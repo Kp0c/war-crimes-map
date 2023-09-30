@@ -14,7 +14,7 @@ export class EventsService {
    *
    * @type {Observable<CrimeEvent>}
    */
-  eventsObservable = new Observable();
+  shownEventsObservable = new Observable();
 
   /**
    *
@@ -38,6 +38,6 @@ export class EventsService {
 
     this.#allEvents = Object.keys(data).map((key) => data[key]).flat();
 
-    this.eventsObservable.next(this.#allEvents);
+    this.shownEventsObservable.next(this.#allEvents);
   }
 }

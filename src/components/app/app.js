@@ -27,7 +27,7 @@ export class App extends HTMLElement {
   connectedCallback() {
     this.#mapComponent = this.shadowRoot.querySelector('wcm-map');
 
-    this.#eventsService.eventsObservable.subscribe((events) => {
+    this.#eventsService.shownEventsObservable.subscribe((events) => {
       this.#mapComponent.setEvents(events);
     }, {
       signal: this.#abortController.signal,

@@ -16,11 +16,23 @@ Components are using `wcm-` prefix that means "war crimes map."
 - The `wcm-navbar` component is responsible for the navigation bar
 - The `wcm-filter` component is responsible for the search and filter area
 
-`main.js` files defines all components
-`constants.js` contains generic constants for the app.
+Additional classes:
+- `helpers/observable.js` a small observable to add reactivity
+- `services/events.service.js` a service that is responsible for the work with events
+
+Few more general files:
+- `main.js` files defines all components
+- `constants.js` contains generic constants for the app.
+- `enums.js` contains enums
 
 ## Available functionality
 - Showing a map of Ukraine
+  - Map can be resized by the mouse wheel. It will zoom into the position of your mouse
+  - Map can be moved by dragging
+- Show events on the map and group them depending on the scale:
+  - When it is a small scale, it shows regions
+  - When it is a medium scale, it shows districts
+  - When it is a large scale, it shows cities
 
 ## Geocoding
 ### General
@@ -42,8 +54,7 @@ Ideally, it should be stored together with coordinates, but we cannot change the
 - [ ] Create grouping of events. Scale X -> show regions. Scale Y -> show ADM2, Scale Z -> show cities 
 - [ ] Add the list of crime types at the bottom
 - [ ] Add Filters functionality (Working crime filter)
-- [ ] Allow the map to be resized
-- [ ] Create events grouping based on the zoom level
+- [x] Allow the map to be resized
 - [ ] Create a List View
 - [ ] Add Dots animation
 - [ ] Add mobile design
