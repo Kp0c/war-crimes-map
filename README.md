@@ -15,6 +15,7 @@ Components are using `wcm-` prefix that means "war crimes map."
 - The `wcm-map` component is responsible for the map
 - The `wcm-navbar` component is responsible for the navigation bar
 - The `wcm-filter` component is responsible for the search and filter area
+- The `wcm-list` component is responsible for the list view
 
 Additional classes:
 - `helpers/observable.js` a small observable to add reactivity

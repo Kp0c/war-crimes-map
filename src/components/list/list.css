@@ -1,0 +1,6 @@
+:host {
+  width: calc(100% - var(--navbar-width) - var(--filter-width));
+  left: var(--navbar-width);
+  height: 100%;
+  position: fixed;
+}

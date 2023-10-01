@@ -218,6 +218,8 @@ export class Map extends HTMLElement {
       this.#canvas.width = img.width;
       this.#canvas.height = img.height;
 
+      // recalculate dots with a new size
+      this.#eventDots = this.#eventsToDots(this.#events);
       this.#render();
     }
 

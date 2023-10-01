@@ -23,9 +23,41 @@ export class App extends HTMLElement {
     shadow.appendChild(templateElement.content.cloneNode(true));
   }
 
-  connectedCallback() {
-    const mapComponent = this.shadowRoot.querySelector('wcm-map');
-    const filterComponent = this.shadowRoot.querySelector('wcm-filter');
+  async connectedCallback() {
+    await this.#eventsService.init(eventsUrl, namesUrl).catch(console.error);
+
+    window.addEventListener('hashchange', () => {
+      this.#selectRoute();
+    }, {
+      signal: this.#abortController.signal,
+    });
+
+    this.#selectRoute();
+    this.#setupFilter();
+  }
+
+  disconnectedCallback() {
+    this.#abortController.abort();
+  }
+
+  #selectRoute() {
+    const { hash } = window.location;
+
+    if (hash === '#list') {
+      this.#showListView();
+    } else if (hash === '#map') {
+      this.#showMapView();
+    } else {
+      // default route
+      window.location.hash = '#map';
+    }
+  }
+
+  #showMapView() {
+    const routerSlot = this.shadowRoot.getElementById('router-slot');
+    routerSlot.innerHTML = '';
+    const mapComponent = document.createElement('wcm-map');
+    routerSlot.appendChild(mapComponent);
 
     mapComponent.addEventListener('scale-change', (event) => {
       const {scale} = event.detail;
@@ -34,6 +66,38 @@ export class App extends HTMLElement {
     }, {
       signal: this.#abortController.signal,
     });
+
+    this.#eventsService.shownEventsObservable.subscribe((events) => {
+      mapComponent.setEvents(events);
+    }, {
+      signal: this.#abortController.signal,
+      pushLatestValue: true,
+    });
+
+    this.#eventsService.affectedTypesObservable.subscribe((affectedTypes) => {
+      mapComponent.setAffectedTypes(affectedTypes);
+    }, {
+      signal: this.#abortController.signal,
+      pushLatestValue: true,
+    });
+  }
+
+  #showListView() {
+    const routerSlot = this.shadowRoot.getElementById('router-slot');
+    routerSlot.innerHTML = '';
+    const listComponent = document.createElement('wcm-list');
+    routerSlot.appendChild(listComponent);
+    //
+    // this.#eventsService.shownEventsObservable.subscribe((events) => {
+    //   listComponent.setEvents(events);
+    // }, {
+    //   signal: this.#abortController.signal,
+    //   pushLatestValue: true,
+    // });
+  }
+
+  #setupFilter() {
+    const filterComponent = this.shadowRoot.querySelector('wcm-filter');
 
     filterComponent.addEventListener('filter-change', (event) => {
       const { regionCode, districtCode, cityName, affectedTypes } = event.detail;
@@ -46,29 +110,18 @@ export class App extends HTMLElement {
       });
     });
 
-    this.#eventsService.shownEventsObservable.subscribe((events) => {
-      mapComponent.setEvents(events);
-    }, {
-      signal: this.#abortController.signal,
-    });
-
-    this.#eventsService.affectedTypesObservable.subscribe((affectedTypes) => {
-      mapComponent.setAffectedTypes(affectedTypes);
-      filterComponent.setAffectedTypes(affectedTypes);
-    }, {
-      signal: this.#abortController.signal,
-    });
-
     this.#eventsService.regionsObservable.subscribe((regions) => {
       filterComponent.setRegions(regions);
     }, {
       signal: this.#abortController.signal,
+      pushLatestValue: true,
     });
 
-    this.#eventsService.init(eventsUrl, namesUrl).catch(console.error);
-  }
-
-  disconnectedCallback() {
-    this.#abortController.abort();
+    this.#eventsService.affectedTypesObservable.subscribe((affectedTypes) => {
+      filterComponent.setAffectedTypes(affectedTypes);
+    }, {
+      signal: this.#abortController.signal,
+      pushLatestValue: true,
+    });
   }
 }

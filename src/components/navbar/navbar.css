@@ -14,3 +14,13 @@ nav img {
   margin: 0 auto;
   width: 100%;
 }
+
+nav svg {
+  width: 100%;
+  height: 100%;
+  color: white;
+}
+
+nav a.active svg {
+  color: var(--primary-color)
+}
