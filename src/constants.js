@@ -21,7 +21,7 @@ export const MAP_BOUNDARIES_RANGES = {
 export const UNKNOWN_AFFECTED_TYPE = -1;
 
 export const CRIME_TYPE_TO_COLOR_MAP = {
-  UNKNOWN_AFFECTED_TYPE: "#EBEBEB",
+  "-1": "#7812D0", // for unknown
   "30": "#1A1A1A",
   "31": "#FFA800",
   "32": "#76BCE3",

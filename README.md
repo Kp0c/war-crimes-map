@@ -37,6 +37,7 @@ Few more general files:
 - On loading we take a bit more time to map all events to the cities, districts and regions. So, when user started to use applciation he 
   will see no lags.
 - Show the legend at the bottom of the map
+- Show count of events on the dot with the thousands' space separator
 
 ## Geocoding
 ### General
@@ -60,7 +61,7 @@ With `geokdbush-tk`, `kdbush` libraries and data from geonames database, we can 
 - [x] Add events to the map (The map displays all the data)
 - [x] Create grouping of events. Scale X -> show regions. Scale Y -> show ADM2, Scale Z -> show cities 
 - [x] Add the list of crime types at the bottom
-- [ ] Show amount on the event
+- [x] Show amount on the event
 - [ ] Add Filters functionality (Working crime filter)
 - [x] Allow the map to be resized
 - [ ] Create a List View

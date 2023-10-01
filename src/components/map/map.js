@@ -4,6 +4,18 @@ import mapUrl from '/src/assets/images/map.png';
 import { CRIME_TYPE_BORDER_REQUIRED, CRIME_TYPE_TO_COLOR_MAP, DIFFUSE_AMOUNT_PX, MAP_BOUNDARIES, MAP_BOUNDARIES_RANGES } from '../../constants.js';
 import { MathHelper } from '../../helpers/math.helper.js';
 import { SCALE } from '../../enums.js';
+import { Formatter } from '../../helpers/formatter.js';
+
+/**
+ * Dot
+ * @typedef {Object} Dot
+ * @property {number} x
+ * @property {number} y
+ * @property {number} size
+ * @property {string} color
+ * @property {boolean} borderRequired
+ * @property {string} text
+ */
 
 const templateElement = document.createElement('template');
 templateElement.innerHTML = template;
@@ -58,7 +70,7 @@ export class Map extends HTMLElement {
 
   /**
    *
-   * @type {{x: number, y: number, size: number, color: string, borderRequired: boolean}[]}
+   * @type {Dot[]}
    */
   #eventDots = [];
 
@@ -144,6 +156,12 @@ export class Map extends HTMLElement {
         ctx.stroke();
       }
 
+      ctx.fillStyle = 'white';
+      ctx.font = '9px e-Ukraine serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(dot.text, dot.x, dot.y);
+
       ctx.closePath();
     });
   }
@@ -153,7 +171,7 @@ export class Map extends HTMLElement {
    *
    * @private
    * @param {CrimeEvent[]} events events to transform
-   * @returns {{x: number, y: number, size: number, color: string, borderRequired: boolean}[]} array of dots
+   * @returns {Dot[]} array of dots
    */
   #eventsToDots(events) {
     return events
@@ -168,9 +186,10 @@ export class Map extends HTMLElement {
         return {
           x: diffusedX,
           y: diffusedY,
-          size: Math.log2(event.amount) * 2,
+          size: Math.max(Math.log2(event.amount) * 2, 1),
           color: CRIME_TYPE_TO_COLOR_MAP[event.affectedType],
           borderRequired: CRIME_TYPE_BORDER_REQUIRED[event.affectedType] ?? false,
+          text: Formatter.formatNumber(event.amount),
         };
       });
   }
