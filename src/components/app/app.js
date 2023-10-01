@@ -9,7 +9,6 @@ templateElement.innerHTML = template;
 
 export class App extends HTMLElement {
   #eventsService = new EventsService();
-  #mapComponent;
   #abortController = new AbortController();
 
   constructor() {
@@ -25,9 +24,10 @@ export class App extends HTMLElement {
   }
 
   connectedCallback() {
-    this.#mapComponent = this.shadowRoot.querySelector('wcm-map');
+    const mapComponent = this.shadowRoot.querySelector('wcm-map');
+    const filterComponent = this.shadowRoot.querySelector('wcm-filter');
 
-    this.#mapComponent.addEventListener('scale-change', (event) => {
+    mapComponent.addEventListener('scale-change', (event) => {
       const {scale} = event.detail;
 
       this.#eventsService.setScaleLevel(scale);
@@ -35,18 +35,35 @@ export class App extends HTMLElement {
       signal: this.#abortController.signal,
     });
 
+    filterComponent.addEventListener('filter-change', (event) => {
+      const { regionCode, districtCode, cityName, affectedTypes } = event.detail;
+
+      this.#eventsService.setFilter({
+        regionCode,
+        districtCode,
+        cityName,
+        affectedTypes
+      });
+    });
+
     this.#eventsService.shownEventsObservable.subscribe((events) => {
-      this.#mapComponent.setEvents(events);
+      mapComponent.setEvents(events);
     }, {
       signal: this.#abortController.signal,
     });
 
     this.#eventsService.affectedTypesObservable.subscribe((affectedTypes) => {
-      this.#mapComponent.setAffectedTypes(affectedTypes);
+      mapComponent.setAffectedTypes(affectedTypes);
+      filterComponent.setAffectedTypes(affectedTypes);
     }, {
       signal: this.#abortController.signal,
     });
 
+    this.#eventsService.regionsObservable.subscribe((regions) => {
+      filterComponent.setRegions(regions);
+    }, {
+      signal: this.#abortController.signal,
+    });
 
     this.#eventsService.init(eventsUrl, namesUrl).catch(console.error);
   }

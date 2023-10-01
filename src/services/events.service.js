@@ -6,6 +6,7 @@ import districtsLookup from '../assets/data/ADM2.json'
 import regionsLookup from '../assets/data/ADM1.json'
 import { around } from 'geokdbush-tk';
 import { UNKNOWN_AFFECTED_TYPE } from '../constants.js';
+import { StatsHelper } from '../helpers/stats.helper.js';
 
 /**
  * Crime Event
@@ -55,6 +56,15 @@ import { UNKNOWN_AFFECTED_TYPE } from '../constants.js';
  * @property {CrimeEvent[]} events
  */
 
+/**
+ * Filter
+ * @typedef {Object} Filter
+ * @property {string} [regionCode]
+ * @property {string} [districtCode]
+ * @property {string} [cityName]
+ * @property {string[]} [affectedTypes]
+ */
+
 export class EventsService {
 
   /**
@@ -70,6 +80,13 @@ export class EventsService {
    * @type {Observable<AffectedType[]>}
    */
   affectedTypesObservable = new Observable();
+
+  /**
+   * Observable that emits all regions
+   *
+   * @type {Observable<Region[]>}
+   */
+  regionsObservable = new Observable();
 
   /**
    * @type {Record<string, string>}
@@ -106,6 +123,17 @@ export class EventsService {
    */
   #citiesIndex = null;
 
+  /**
+   * Filter
+   * @type {Filter}
+   */
+  #filter = {
+    regionCode: null,
+    districtCode: null,
+    cityName: null,
+    affectedTypes: [],
+  };
+
   constructor() {
     this.#citiesIndex = new KDBush(citiesLookup.length);
 
@@ -125,6 +153,26 @@ export class EventsService {
   async init(dataUrl, namesUrl) {
     await this.#loadNames(namesUrl);
     await this.#loadEvents(dataUrl);
+  }
+
+  /**
+   * Sets current scale level.
+   * @param {SCALE} scale
+   */
+  setScaleLevel(scale) {
+    this.#currentScaleLevel = scale;
+
+    this.#pushNewEvents();
+  }
+
+  /**
+   * Sets filter
+   * @param {Filter} filter
+   */
+  setFilter(filter) {
+    this.#filter = filter;
+
+    this.#pushNewEvents();
   }
 
   /**
@@ -166,17 +214,8 @@ export class EventsService {
     this.#allEvents = allEvents;
     this.#regions = regionGroups;
 
+    this.#pushRegions();
     this.#pushAffectedTypes();
-    this.#pushNewEvents();
-  }
-
-  /**
-   * Sets current scale level.
-   * @param {SCALE} scale
-   */
-  setScaleLevel(scale) {
-    this.#currentScaleLevel = scale;
-
     this.#pushNewEvents();
   }
 
@@ -232,7 +271,7 @@ export class EventsService {
         existing.cities.push(city);
 
         if (city.stats) {
-          existing.stats = this.#mergeStats(existing.stats, city.stats);
+          existing.stats = StatsHelper.mergeStats(existing.stats, city.stats);
         }
       } else {
         acc.push({
@@ -275,7 +314,7 @@ export class EventsService {
         existing.districts.push(district);
 
         if (district.stats) {
-          existing.stats = this.#mergeStats(existing.stats, district.stats);
+          existing.stats = StatsHelper.mergeStats(existing.stats, district.stats);
         }
       } else {
         acc.push({
@@ -302,46 +341,30 @@ export class EventsService {
   }
 
   /**
-   * Merge stats to accumulate values
-   * @param {Record<string, number>} oldStats
-   * @param {Record<string, number>} newStats
-   */
-  #mergeStats(oldStats, newStats) {
-    const result = {};
-
-    if (oldStats !== undefined) {
-      Object.keys(oldStats).forEach((key) => {
-        result[key] = oldStats[key];
-
-        if (newStats[key]) {
-          result[key] += newStats[key];
-        }
-      });
-    }
-
-    if (newStats !== undefined) {
-      Object.keys(newStats).forEach((key) => {
-        if (!result[key]) {
-          result[key] = newStats[key];
-        }
-      });
-    }
-
-    return result;
-  }
-
-  /**
-   * Pushes new events based on the current scale level.
-   * Retrieves event data based on the current scale level and converts it into a standardized format.
-   * Publishes the new events through an observable.
+   * Pushes events based on the current scale level and filters.
+   * Publishes events through an observable.
    */
   #pushNewEvents() {
+    let filterAwareScaleLevel = this.#currentScaleLevel;
+
+    // if the user has already filtered the region, it makes very little sense to show region-level.
+    // so we show district-level instead
+    if (filterAwareScaleLevel === SCALE.REGION && this.#filter.regionCode) {
+      filterAwareScaleLevel = SCALE.DISTRICT;
+    }
+
+    // if the user has already filtered the city, it makes very little sense to show district-level.
+    // so we show city-level instead
+    if (filterAwareScaleLevel === SCALE.DISTRICT && this.#filter.cityName) {
+      filterAwareScaleLevel = SCALE.CITY;
+    }
+
     let events = [];
-    if (this.#currentScaleLevel === SCALE.REGION) {
+    if (filterAwareScaleLevel === SCALE.REGION) {
       events = this.#getRegionsEvents();
-    } else if (this.#currentScaleLevel === SCALE.DISTRICT) {
+    } else if (filterAwareScaleLevel === SCALE.DISTRICT) {
       events = this.#getDistrictsEvents();
-    } else if (this.#currentScaleLevel === SCALE.CITY) {
+    } else if (filterAwareScaleLevel === SCALE.CITY) {
       events = this.#getCitiesEvents();
     }
 
@@ -349,7 +372,11 @@ export class EventsService {
     const resultEvents = events.flatMap((event) => {
       const { stats } = event;
 
-      return Object.keys(stats).map((key) => {
+      return Object.keys(stats)
+        .filter((key) => {
+          return !this.#filter.affectedTypes.length || this.#filter.affectedTypes.includes(key);
+        })
+        .map((key) => {
         return {
           lat: event.lat,
           lon: event.lon,
@@ -367,9 +394,21 @@ export class EventsService {
    * @returns {{stats: Record<string, number>, lon: number, lat: number}[]}
    */
   #getCitiesEvents() {
-    return this.#regions.flatMap((region) => {
-      return region.districts.flatMap((district) => {
-        return district.cities.map((city) => {
+    return this.#regions
+      .filter((region) => {
+        return !this.#filter.regionCode || region.regionCode === this.#filter.regionCode;
+      })
+      .flatMap((region) => {
+      return region.districts
+        .filter((district) => {
+          return !this.#filter.districtCode || district.districtCode === this.#filter.districtCode;
+        })
+        .flatMap((district) => {
+        return district.cities
+          .filter((city) => {
+            return !this.#filter.cityName || city.city === this.#filter.cityName;
+          })
+          .map((city) => {
           const { lat, lon, stats } = city;
 
           return {
@@ -387,7 +426,11 @@ export class EventsService {
    * @returns {{stats: Record<string, number>, lon: number, lat: number}[]}
    */
   #getDistrictsEvents() {
-    return this.#regions.flatMap((region) => {
+    return this.#regions
+      .filter((region) => {
+        return !this.#filter.regionCode || region.regionCode === this.#filter.regionCode;
+      })
+      .flatMap((region) => {
       return region.districts.map((district) => {
         const { lat, lon, stats } = district;
 
@@ -446,5 +489,12 @@ export class EventsService {
     });
 
     this.affectedTypesObservable.next(mappedAffectedTypes);
+  }
+
+  /**
+   * Pushes regions to the observable
+   */
+  #pushRegions() {
+    this.regionsObservable.next(this.#regions);
   }
 }

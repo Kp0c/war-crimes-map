@@ -23,26 +23,12 @@
   <div class="filters-container">
     <section class="filter">
       <h2>Crime Type</h2>
-      <div class="crime-types">
+      <div class="crime-types" id="stats">
         <label for="crime-1" class="crime-field">
           <input type="checkbox" name="murder" id="crime-1" checked>
           <span class="crime-name">Murder</span>
           <span class="spacer"></span>
           <span class="crime-number">5 996</span>
-        </label>
-        <label for="crime-2" class="crime-field">
-          <input type="checkbox" name="murder" id="crime-2">
-          <span class="crime-name">Abduction</span>
-        </label>
-        <label for="crime-3" class="crime-field">
-          <input type="checkbox" name="murder" id="crime-3">
-          <span class="crime-name">Torture / inhuman treatment</span>
-          <span class="spacer"></span>
-          <span class="crime-number">1 234</span>
-        </label>
-        <label for="crime-4" class="crime-field">
-          <input type="checkbox" name="murder" id="crime-4">
-          <span class="crime-name">Sexual abuse</span>
         </label>
         <label for="crime-all" class="crime-field">
           <input type="checkbox" name="murder" id="crime-all">
@@ -73,10 +59,10 @@
       <div class="result">
         <span>Results: </span> <span id="result-number">5 996</span>
       </div>
-      <div class="chips">
-        <div class="chip murder">Murder</div>
+      <div class="chips" id="chips">
+        <div class="chip">Murder</div>
         <div class="chip state">All States</div>
-        <div class="chip city">All Cities / Towns</div>
+        <div class="chip">All Cities / Towns</div>
       </div>
     </section>
 

@@ -10,5 +10,5 @@
   --map-complementary-color: #444444;
 
   --navbar-width: 60px;
-  --filter-width: max(min(45%, 300px), 500px);
+  --filter-width: 35%;
 }

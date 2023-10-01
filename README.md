@@ -33,11 +33,25 @@ Few more general files:
   - When it is a small scale, it shows regions
   - When it is a medium scale, it shows districts
   - When it is a large scale, it shows cities
+  - **Be aware!** Filters overrides zoom settings. So, if you filtered by the city, you will see city-level events, even if you zoomed out. Or if you 
+    filtered by the region - you will see district-level events, even if you zoomed out. But zoom in will work as expected.
 - Show different events in different colors on map
 - On loading we take a bit more time to map all events to the cities, districts and regions. So, when user started to use applciation he 
   will see no lags.
 - Show the legend at the bottom of the map
 - Show count of events on the dot with the thousands' space separator
+- Allow to filter events by:
+  - crime type
+  - region
+  - city
+- Make filter fields to work reactive with each other, for example:
+  - If you select a region, the city field will be populated with cities from this region
+  - If you select a city, the region field will be populated with the region of this city
+  - If you select a city, crime type area will be populated with crime types that are present in this city
+  - etc.
+- Show how many events are filtered
+- Allow to clear the filter
+- On apply - filter the map
 
 ## Geocoding
 ### General
@@ -62,7 +76,7 @@ With `geokdbush-tk`, `kdbush` libraries and data from geonames database, we can 
 - [x] Create grouping of events. Scale X -> show regions. Scale Y -> show ADM2, Scale Z -> show cities 
 - [x] Add the list of crime types at the bottom
 - [x] Show amount on the event
-- [ ] Add Filters functionality (Working crime filter)
+- [x] Add Filters functionality (Working crime filter)
 - [x] Allow the map to be resized
 - [ ] Create a List View
 - [ ] Add Dots animation
@@ -80,6 +94,7 @@ With `geokdbush-tk`, `kdbush` libraries and data from geonames database, we can 
   zoom in
 - Improve performance of mapping. Not sure what we can do here, because we need to map tens of thousands events on tens of thousands cities.
 - Do better scaling. With the current scaling approach, zoomed in version looks very ugly
+- Add more unit tests to cover service and components logic
 
 ## How to run
 1. Clone the repo

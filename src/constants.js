@@ -33,4 +33,4 @@ export const CRIME_TYPE_BORDER_REQUIRED = {
   "30": true
 }
 
-export const DIFFUSE_AMOUNT_PX = 50;
+export const DIFFUSE_AMOUNT_PX = 20;
