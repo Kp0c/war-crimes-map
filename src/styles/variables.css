@@ -7,5 +7,8 @@
 
   /* this  color matches the map color scheme, it will be look good when user zoomed out too much,
    so image does not fit anymore */
-  --map-complementary-color: #444444
+  --map-complementary-color: #444444;
+
+  --navbar-width: 60px;
+  --filter-width: max(min(45%, 300px), 500px);
 }

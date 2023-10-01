@@ -27,16 +27,6 @@ export class App extends HTMLElement {
   connectedCallback() {
     this.#mapComponent = this.shadowRoot.querySelector('wcm-map');
 
-    this.#eventsService.shownEventsObservable.subscribe((events) => {
-      this.#mapComponent.setEvents(events);
-    }, {
-      signal: this.#abortController.signal,
-    })
-
-    setTimeout(() => {
-      this.#eventsService.init(eventsUrl, namesUrl).catch(console.error);
-    }, 0);
-
     this.#mapComponent.addEventListener('scale-change', (event) => {
       const {scale} = event.detail;
 
@@ -44,6 +34,21 @@ export class App extends HTMLElement {
     }, {
       signal: this.#abortController.signal,
     });
+
+    this.#eventsService.shownEventsObservable.subscribe((events) => {
+      this.#mapComponent.setEvents(events);
+    }, {
+      signal: this.#abortController.signal,
+    });
+
+    this.#eventsService.affectedTypesObservable.subscribe((affectedTypes) => {
+      this.#mapComponent.setAffectedTypes(affectedTypes);
+    }, {
+      signal: this.#abortController.signal,
+    });
+
+
+    this.#eventsService.init(eventsUrl, namesUrl).catch(console.error);
   }
 
   disconnectedCallback() {

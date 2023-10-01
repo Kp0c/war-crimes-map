@@ -3,14 +3,14 @@
 wcm-navbar {
   position: fixed;
   height: 100%;
-  width: 60px;
+  width: var(--navbar-width);
   background-color: var(--black-color);
 }
 
 wcm-filter {
   position: fixed;
   height: 100%;
-  width: max(min(45%, 300px), 500px);
+  width: var(--filter-width);
   background-color: var(--background-white-color);
   right: 0;
 }

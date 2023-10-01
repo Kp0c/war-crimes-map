@@ -11,3 +11,35 @@
 canvas {
   display: block;
 }
+
+.legend {
+  position: fixed;
+  z-index: 1;
+  width: calc(100% - var(--navbar-width) - var(--filter-width));
+  bottom: 0;
+  left: var(--navbar-width);
+  padding: 0 0 34px 32px;
+
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.crime {
+  display: flex;
+  gap: 6px;
+}
+
+.crime span {
+  font-size: 11px;
+  font-weight: 300;
+  line-height: 16px;
+  color: white;
+}
+
+.crime .circle {
+  width: 12px;
+  height: 12px;
+  opacity: 0.90;
+  border-radius: 9999px;
+}

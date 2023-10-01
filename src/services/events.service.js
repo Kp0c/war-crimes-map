@@ -17,6 +17,13 @@ import { UNKNOWN_AFFECTED_TYPE } from '../constants.js';
 */
 
 /**
+ * Event Type
+ * @typedef {Object} AffectedType
+ * @property {string} name
+ * @property {string} affectedType
+ */
+
+/**
  * Region
  * @typedef {Object} Region
  * @property {string} regionCode
@@ -49,6 +56,31 @@ import { UNKNOWN_AFFECTED_TYPE } from '../constants.js';
  */
 
 export class EventsService {
+
+  /**
+   * Observable that emits events that should be shown
+   *
+   * @type {Observable<CrimeEvent>}
+   */
+  shownEventsObservable = new Observable();
+
+  /**
+   * Observable that emits all affected types
+   *
+   * @type {Observable<AffectedType[]>}
+   */
+  affectedTypesObservable = new Observable();
+
+  /**
+   * @type {Record<string, string>}
+   */
+  #affectedTypeMapping = {};
+
+  /**
+   * @type {Record<string, string>}
+   */
+  #eventMapping = {};
+
   /**
    * All events
    * @type {CrimeEvent[]}
@@ -74,12 +106,6 @@ export class EventsService {
    */
   #citiesIndex = null;
 
-  /**
-   *
-   * @type {Observable<CrimeEvent>}
-   */
-  shownEventsObservable = new Observable();
-
   constructor() {
     this.#citiesIndex = new KDBush(citiesLookup.length);
 
@@ -97,6 +123,7 @@ export class EventsService {
    * @returns {Promise<void>}
    */
   async init(dataUrl, namesUrl) {
+    await this.#loadNames(namesUrl);
     await this.#loadEvents(dataUrl);
   }
 
@@ -122,7 +149,7 @@ export class EventsService {
           lat: event.lat,
           lon: event.lon,
           affectedType: event.affected_type ?? UNKNOWN_AFFECTED_TYPE,
-          name: event.name,
+          name: this.#eventMapping[event.event] ?? 'UNKNOWN',
           city: city.name,
           cityLat: city.lat,
           cityLon: city.lon,
@@ -139,6 +166,7 @@ export class EventsService {
     this.#allEvents = allEvents;
     this.#regions = regionGroups;
 
+    this.#pushAffectedTypes();
     this.#pushNewEvents();
   }
 
@@ -161,6 +189,7 @@ export class EventsService {
   #groupEventsByCity(events) {
     return events.reduce((acc, event) => {
       const existing = acc.find((item) => item.city === event.city);
+
       if (existing) {
         existing.events.push(event);
 
@@ -178,7 +207,7 @@ export class EventsService {
           city: event.city,
           lat: event.cityLat,
           lon: event.cityLon,
-          events: [],
+          events: [event],
           stats: event.affectedType ? { [event.affectedType]: 1 } : {},
         })
       }
@@ -194,23 +223,23 @@ export class EventsService {
    * @returns {Array<District>} - An array of districts with their corresponding cities.
    */
   #groupCitiesByDistricts(cityGroups) {
-    const districts = Object.keys(cityGroups).reduce((acc, city) => {
-      const { districtCode, regionCode } = cityGroups[city];
+    const districts = cityGroups.reduce((acc, city) => {
+      const { districtCode, regionCode } = city;
 
       const existing = acc.find((item) => item.districtCode === districtCode);
 
       if (existing) {
-        existing.cities.push(cityGroups[city]);
+        existing.cities.push(city);
 
-        if (cityGroups[city].stats) {
-          existing.stats = this.#mergeStats(existing.stats, cityGroups[city].stats);
+        if (city.stats) {
+          existing.stats = this.#mergeStats(existing.stats, city.stats);
         }
       } else {
         acc.push({
           districtCode,
           regionCode,
-          cities: [cityGroups[city]],
-          stats: cityGroups[city].stats,
+          cities: [city],
+          stats: city.stats,
         });
       }
 
@@ -237,22 +266,22 @@ export class EventsService {
    * @returns {Array<Region>} - An array of regions with their corresponding district data.
    */
   #groupDistrictsByRegions(districtGroups) {
-    const regions = Object.keys(districtGroups).reduce((acc, district) => {
-      const { regionCode } = districtGroups[district];
+    const regions = districtGroups.reduce((acc, district) => {
+      const { regionCode } = district;
 
       const existing = acc.find((item) => item.regionCode === regionCode);
 
       if (existing) {
-        existing.districts.push(districtGroups[district]);
+        existing.districts.push(district);
 
-        if (districtGroups[district].stats) {
-          existing.stats = this.#mergeStats(existing.stats, districtGroups[district].stats);
+        if (district.stats) {
+          existing.stats = this.#mergeStats(existing.stats, district.stats);
         }
       } else {
         acc.push({
           regionCode,
           districts: [],
-          stats: districtGroups[district].stats,
+          stats: district.stats,
         });
       }
 
@@ -385,5 +414,37 @@ export class EventsService {
         stats
       };
     });
+  }
+
+  /**
+   * Loads names from the specified URL.
+   *
+   * @param {string} namesUrl - The URL from which to load the names.
+   */
+  async #loadNames(namesUrl) {
+    const response = await fetch(namesUrl);
+
+    const data = await response.json();
+
+    this.#affectedTypeMapping = data[0].affected_type;
+    this.#eventMapping = data[0].event;
+  }
+
+  /**
+   * Pushes affected types to the observable
+   */
+  #pushAffectedTypes() {
+    const mappedAffectedTypes = Object.keys(this.#affectedTypeMapping)
+      .filter((key) => {
+        return this.#allEvents.some((event) => event.affectedType === +key);
+      })
+      .map((key) => {
+      return {
+        name: this.#affectedTypeMapping[key],
+        affectedType: key,
+      };
+    });
+
+    this.affectedTypesObservable.next(mappedAffectedTypes);
   }
 }

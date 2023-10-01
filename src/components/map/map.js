@@ -35,6 +35,12 @@ export class Map extends HTMLElement {
   #events = [];
 
   /**
+   * Affected Types
+   * @type {AffectedType[]}
+   */
+  #affectedTypes = [];
+
+  /**
    * Scale of the map
    * @type {number}
    */
@@ -85,6 +91,17 @@ export class Map extends HTMLElement {
     this.#events = events;
     this.#eventDots = this.#eventsToDots(this.#events);
     this.#render();
+  }
+
+  /**
+   * set affected types for the map
+   *
+   * @param {AffectedType[]} affectedTypes
+   */
+  setAffectedTypes(affectedTypes) {
+    this.#affectedTypes = affectedTypes;
+
+    this.#setLegend();
   }
 
   connectedCallback() {
@@ -286,5 +303,37 @@ export class Map extends HTMLElement {
     } else {
       return SCALE.REGION;
     }
+  }
+
+  /**
+   * Sets the legend for the map.
+   */
+  #setLegend() {
+    const legend = this.shadowRoot.getElementById('legend');
+
+    legend.innerHTML = '';
+
+    this.#affectedTypes.forEach((affectedType) => {
+      // Create the outer div
+      const outerDiv = document.createElement('div');
+      outerDiv.classList.add('crime');
+
+      // Create the circle div
+      const circleDiv = document.createElement('div');
+      circleDiv.classList.add('circle');
+
+      circleDiv.style.backgroundColor = CRIME_TYPE_TO_COLOR_MAP[affectedType.affectedType];
+      circleDiv.style.border = CRIME_TYPE_BORDER_REQUIRED[affectedType.affectedType] ? '1px white solid' : '';
+
+      outerDiv.appendChild(circleDiv);
+
+      // Create the span element
+      const spanElement = document.createElement('span');
+      spanElement.textContent = affectedType.name;
+      outerDiv.appendChild(spanElement);
+
+      // Append to the legend
+      legend.appendChild(outerDiv);
+    });
   }
 }
