@@ -93,6 +93,7 @@ This process is time-consuming operation, so we show a spinner with a progress t
   Because we're clusterizing by the city, district, region, some dots are pretty far from their actual position until the user 
   zoom in
 - Do better scaling. With the current scaling approach, zoomed in version looks very ugly
+- Optimize performance when user zoomed-in too much and show only what is visible on the screen
 - Add more unit tests to cover service and components logic
 
 ## How to run
