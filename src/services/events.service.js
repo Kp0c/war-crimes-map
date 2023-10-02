@@ -9,13 +9,28 @@ import { UNKNOWN_AFFECTED_TYPE } from '../constants.js';
 import { StatsHelper } from '../helpers/stats.helper.js';
 
 /**
- * Crime Event
- * @typedef {Object} CrimeEvent
+ * Crime Event Group
+ * @typedef {Object} CrimeEventGroup
  * @property {number} lat
  * @property {number} lon
  * @property {number} affectedType
  * @property {number} amount
 */
+
+/**
+ * Crime Event
+ * @typedef {Object} CrimeEvent
+ * @property {number} lat
+ * @property {number} lon
+ * @property {number} affectedType
+ * @property {string} name
+ * @property {string} city
+ * @property {number} cityLat
+ * @property {number} cityLon
+ * @property {string} districtCode
+ * @property {string} regionCode
+ * @property {string} regionName
+ */
 
 /**
  * Event Type
@@ -53,7 +68,7 @@ import { StatsHelper } from '../helpers/stats.helper.js';
  * @property {number} lat
  * @property {number} lon
  * @property {Record<string, number>} stats
- * @property {CrimeEvent[]} events
+ * @property {CrimeEventGroup[]} events
  */
 
 /**
@@ -70,7 +85,7 @@ export class EventsService {
   /**
    * Observable that emits events that should be shown
    *
-   * @type {Observable<CrimeEvent>}
+   * @type {Observable<CrimeEventGroup>}
    */
   shownEventsObservable = new Observable();
 
@@ -87,6 +102,12 @@ export class EventsService {
    * @type {Observable<Region[]>}
    */
   regionsObservable = new Observable();
+
+  /**
+   * Observable that emits individual events
+   * @type {Observable<CrimeEvent>}
+   */
+  individualEventsObservable = new Observable();
 
   /**
    * @type {Record<string, string>}
@@ -186,8 +207,7 @@ export class EventsService {
     const data = await response.json();
 
     const allEvents = Object.keys(data)
-      .map((key) => data[key])
-      .flat()
+      .flatMap((key) => data[key])
       .filter((event) => event.lat && event.lon)
       .map((event) => {
         const nearestIndex = around(this.#citiesIndex, event.lon, event.lat, 100)[0];
@@ -202,7 +222,7 @@ export class EventsService {
           cityLat: city.lat,
           cityLon: city.lon,
           districtCode: city.ADM2Code,
-          regionCode: city.ADM1Code,
+          regionCode: city.ADM1Code
         }
       })
       .filter((event) => !!event.city);
@@ -319,7 +339,7 @@ export class EventsService {
       } else {
         acc.push({
           regionCode,
-          districts: [],
+          districts: [district],
           stats: district.stats,
         });
       }
@@ -335,6 +355,15 @@ export class EventsService {
       region.regionName = lookupValue?.name;
       region.lat = lookupValue?.lat;
       region.lon = lookupValue?.lon;
+
+      // set regions to individual events as well
+      region.districts.forEach((district) => {
+        district.cities.forEach((city) => {
+          city.events.forEach((event) => {
+            event.regionName = region.regionName;
+          });
+        });
+      });
     });
 
     return regions;
@@ -369,7 +398,7 @@ export class EventsService {
     }
 
     // split stats
-    const resultEvents = events.flatMap((event) => {
+    const resultGroups = events.flatMap((event) => {
       const { stats } = event;
 
       return Object.keys(stats)
@@ -386,7 +415,18 @@ export class EventsService {
       });
     });
 
-    this.shownEventsObservable.next(resultEvents);
+    this.shownEventsObservable.next(resultGroups);
+
+    // get individual events
+    const individualEvents = this.#allEvents
+      .filter((event) => {
+        const isCorrectAffectedType = !this.#filter.affectedTypes.length || this.#filter.affectedTypes.includes(event.affectedType.toString());
+        const isCorrectRegion = !this.#filter.regionCode || event.regionCode === this.#filter.regionCode;
+        const isCorrectCity = !this.#filter.cityName || event.city === this.#filter.cityName;
+        return isCorrectAffectedType && isCorrectRegion && isCorrectCity;
+      });
+
+    this.individualEventsObservable.next(individualEvents);
   }
 
   /**

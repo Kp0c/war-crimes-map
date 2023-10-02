@@ -34,3 +34,5 @@ export const CRIME_TYPE_BORDER_REQUIRED = {
 }
 
 export const DIFFUSE_AMOUNT_PX = 20;
+
+export const MAX_LIST_RECORDS = 100;

@@ -42,7 +42,7 @@ export class Map extends HTMLElement {
    * events to render
    *
    * @private
-   * @type {CrimeEvent[]}
+   * @type {CrimeEventGroup[]}
    */
   #events = [];
 
@@ -97,7 +97,7 @@ export class Map extends HTMLElement {
   /**
    * set events for map
    *
-   * @param {CrimeEvent[]} events events
+   * @param {CrimeEventGroup[]} events events
    */
   setEvents(events) {
     this.#events = events;
@@ -170,7 +170,7 @@ export class Map extends HTMLElement {
    * transform events to dots
    *
    * @private
-   * @param {CrimeEvent[]} events events to transform
+   * @param {CrimeEventGroup[]} events events to transform
    * @returns {Dot[]} array of dots
    */
   #eventsToDots(events) {

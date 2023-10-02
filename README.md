@@ -15,7 +15,7 @@ Components are using `wcm-` prefix that means "war crimes map."
 - The `wcm-map` component is responsible for the map
 - The `wcm-navbar` component is responsible for the navigation bar
 - The `wcm-filter` component is responsible for the search and filter area
-- The `wcm-list` component is responsible for the list view
+- The `wcm-list` component is responsible for the list view of individual events
 
 Additional classes:
 - `helpers/observable.js` a small observable to add reactivity
@@ -53,6 +53,9 @@ Few more general files:
 - Show how many events are filtered
 - Allow to clear the filter
 - On apply - filter the map
+- List view that shows individual crimes. It is limited by `MAX_LIST_RECORDS` records. If there are more than `MAX_LIST_RECORDS` records, then we show a text 
+  that 
+  asks user to use filters to see more precise results
 
 ## Geocoding
 ### General
@@ -79,14 +82,14 @@ With `geokdbush-tk`, `kdbush` libraries and data from geonames database, we can 
 - [x] Show amount on the event
 - [x] Add Filters functionality (Working crime filter)
 - [x] Allow the map to be resized
-- [ ] Create a List View
+- [x] Create a List View
 - [ ] Add Dots animation
 - [ ] Add mobile design
 - [ ] Documentation
 - [x] Use correct fonts
 - [ ] Test deployment
-- [ ] (Optional) improve scaling
 - [ ] (Optional) Get rid of geokdbush
+- [ ] (Optional) improve scaling
 - [ ] (Optional) extract data processing to the service worker to improve performance
 
 ## What I'd change if I had more time

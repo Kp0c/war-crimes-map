@@ -87,13 +87,13 @@ export class App extends HTMLElement {
     routerSlot.innerHTML = '';
     const listComponent = document.createElement('wcm-list');
     routerSlot.appendChild(listComponent);
-    //
-    // this.#eventsService.shownEventsObservable.subscribe((events) => {
-    //   listComponent.setEvents(events);
-    // }, {
-    //   signal: this.#abortController.signal,
-    //   pushLatestValue: true,
-    // });
+
+    this.#eventsService.individualEventsObservable.subscribe((events) => {
+      listComponent.setEvents(events);
+    }, {
+      signal: this.#abortController.signal,
+      pushLatestValue: true,
+    });
   }
 
   #setupFilter() {
