@@ -120,20 +120,19 @@ export class Filter extends HTMLElement {
       this.#selectedRegionCode = event.target.value;
       this.#selectedCity = '';
 
-      const region = this.#regions.find((region) => region.regionCode === this.#selectedRegionCode);
-
-      this.#setCityOptions(region);
-
-      this.#currentStats = region?.stats ?? this.#regions.reduce((acc, region) => {
-        return StatsHelper.mergeStats(acc, region.stats);
-      }, {});
-      this.#renderStats();
+      this.#setRegionStats();
     }, {
       signal: this.#destroyController.signal,
     });
 
     this.shadowRoot.getElementById('city').addEventListener('change', (event) => {
       this.#selectedCity = event.target.value;
+
+      if (this.#selectedCity === '') {
+        this.#setRegionStats();
+        return;
+      }
+
       const [regionCode, districtCode, cityId] = this.#selectedCity.split('-');
 
       const currentRegion = this.#regions.find((region) => region.regionCode === regionCode);
@@ -181,7 +180,19 @@ export class Filter extends HTMLElement {
     });
   }
 
-  /**
+    #setRegionStats() {
+      const region = this.#regions.find((region) => region.regionCode === this.#selectedRegionCode);
+
+      this.#setCityOptions(region);
+
+      this.#currentStats = region?.stats ?? this.#regions.reduce((acc, region) => {
+        return StatsHelper.mergeStats(acc, region.stats);
+      }, {});
+
+      this.#renderStats();
+    }
+
+    /**
    * Render Filter Stats
    */
   #renderStats() {
@@ -340,7 +351,7 @@ export class Filter extends HTMLElement {
 
     allCities.sort().forEach((city) => {
       const option = document.createElement('option');
-      option.value = `${ city.regionCode }-${ city.districtCode }-${ city.cityId }`;
+      option.value = `${ city.regionCode }-${ city.districtCode }-${ city.cityId }-${ city.city }`;
       option.textContent = city.city;
 
       cityOptions.appendChild(option);
@@ -388,7 +399,7 @@ export class Filter extends HTMLElement {
     // city chip
     const cityChip = document.createElement('div');
     cityChip.className = 'chip';
-    cityChip.textContent = this.#selectedCity?.split('-')[2] ?? 'All Cities / Towns';
+    cityChip.textContent = this.#selectedCity?.split('-')[3] ?? 'All Cities / Towns';
     chipsContainer.appendChild(cityChip);
   }
 
