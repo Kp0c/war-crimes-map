@@ -1,4 +1,4 @@
-@import "src/styles/common.css";
+@import "../../styles/common.css";
 
 :host {
   width: calc(100% - var(--navbar-width) - var(--filter-width));

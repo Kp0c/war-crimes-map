@@ -66,6 +66,8 @@ Few more general files:
   - Close filter when "Apply" button clicked
   - Make list view look nice
   - Change "Map" button color to black to be visible on the white list view background
+  - Allow moving the map by dragging on the mobile
+  - Allow zooming the map by pinching on the mobile
 
 ## Geocoding
 ### General
@@ -94,7 +96,7 @@ With `geokdbush-tk`, `kdbush` libraries and data from geonames database, we can 
 - [x] Allow the map to be resized
 - [x] Create a List View
 - [x] Add Dots animation
-- [ ] Add mobile design
+- [x] Add mobile design
 - [ ] Documentation
 - [x] Use correct fonts
 - [ ] Test deployment

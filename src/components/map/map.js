@@ -261,14 +261,9 @@ export class Map extends HTMLElement {
    * Sets up the resize event listener for the canvas element.
    */
   #setupResize() {
-    this.#canvas.addEventListener('wheel', (event) => {
-      event.preventDefault();
-
-      const mouseX = event.clientX - this.#canvas.getBoundingClientRect().left;
-      const mouseY = event.clientY - this.#canvas.getBoundingClientRect().top;
-
-
-      const delta = event.deltaY / 1000;
+    const zoom = (centerX, centerY, delta) => {
+      centerX -= this.#canvas.getBoundingClientRect().left;
+      centerY -= this.#canvas.getBoundingClientRect().top;
 
       const newScale = MathHelper.clamp(this.#currentScale - delta, 0.2, 5);
 
@@ -276,11 +271,8 @@ export class Map extends HTMLElement {
         return;
       }
 
-      // Calculate the new offsets, scale from the cursor's position
-      this.#currentOffset.x +=
-        mouseX * (1 - newScale / this.#currentScale);
-      this.#currentOffset.y +=
-        mouseY * (1 - newScale / this.#currentScale);
+      this.#currentOffset.x += centerX * (1 - newScale / this.#currentScale);
+      this.#currentOffset.y += centerY * (1 - newScale / this.#currentScale);
 
       const previousScaleLevel = this.#determineScaleLevel();
       this.#currentScale = newScale;
@@ -295,9 +287,47 @@ export class Map extends HTMLElement {
       }
 
       this.#applyTransformProps();
-
       this.#render();
+    }
+
+    this.#canvas.addEventListener('wheel', (event) => {
+        if (event.deltaY) {
+          event.preventDefault();
+
+          zoom(event.clientX, event.clientY, event.deltaY / 1000);
+        }
+      }, {
+      signal: this.#destroyController.signal, passive: false
+    });
+
+    let initialDistance = 0;
+
+    this.#canvas.addEventListener('touchstart', (event) => {
+      if (event.touches.length === 2) {
+        initialDistance = getDistance(event);
+      }
     }, { signal: this.#destroyController.signal });
+
+    this.#canvas.addEventListener('touchmove', (event) => {
+      if (event.touches.length === 2) {
+        event.preventDefault();
+
+        const distance = getDistance(event);
+        const delta = distance - initialDistance;
+
+        const centerX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
+        const centerY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
+        zoom(centerX, centerY, -delta / 300);
+
+        initialDistance = distance;
+      }
+    }, { signal: this.#destroyController.signal });
+
+    function getDistance(event) {
+      const dx = event.touches[1].clientX - event.touches[0].clientX;
+      const dy = event.touches[1].clientY - event.touches[0].clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
   }
 
   /**
@@ -308,30 +338,46 @@ export class Map extends HTMLElement {
     let startX = 0;
     let startY = 0;
 
-    this.#canvas.addEventListener('mousedown', (event) => {
+    const startDragging = (event) => {
       isDragging = true;
-      startX = event.clientX - this.#currentOffset.x;
-      startY = event.clientY - this.#currentOffset.y;
+      const clientX = event.clientX === undefined ? event.touches[0].clientX : event.clientX;
+      const clientY = event.clientY === undefined ? event.touches[0].clientY : event.clientY;
+
+      startX = clientX - this.#currentOffset.x;
+      startY = clientY - this.#currentOffset.y;
 
       this.#canvas.style.cursor = 'grabbing';
-    }, { signal: this.#destroyController.signal });
+    }
 
-    this.#canvas.addEventListener('mousemove', (event) => {
-      if (!isDragging) {
+    this.#canvas.addEventListener('mousedown', startDragging, { signal: this.#destroyController.signal });
+    this.#canvas.addEventListener('touchstart', startDragging, { signal: this.#destroyController.signal });
+
+    const onDrag = (event) => {
+      if (!isDragging || event.touches?.length > 1) {
         return;
       }
+      event.preventDefault();
 
-      this.#currentOffset.x = event.clientX - startX;
-      this.#currentOffset.y = event.clientY - startY;
+      const clientX = event.clientX === undefined ? event.touches[0].clientX : event.clientX;
+      const clientY = event.clientY === undefined ? event.touches[0].clientY : event.clientY;
+
+      this.#currentOffset.x = clientX - startX;
+      this.#currentOffset.y = clientY - startY;
 
       this.#applyTransformProps();
-    }, { signal: this.#destroyController.signal });
+    }
 
-    this.#canvas.addEventListener('mouseup', () => {
+    this.#canvas.addEventListener('mousemove', onDrag, { signal: this.#destroyController.signal });
+    this.#canvas.addEventListener('touchmove', onDrag, { signal: this.#destroyController.signal });
+
+
+    const stopDragging = () => {
       isDragging = false;
-
       this.#canvas.style.cursor = 'default';
-    }, { signal: this.#destroyController.signal });
+    }
+
+    this.#canvas.addEventListener('mouseup', stopDragging, { signal: this.#destroyController.signal });
+    this.#canvas.addEventListener('touchend', stopDragging, { signal: this.#destroyController.signal });
   }
 
   /**
