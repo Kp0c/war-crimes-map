@@ -216,6 +216,14 @@ export class EventsService {
       this.#pushRegions();
       this.#pushAffectedTypes();
       this.#pushNewEvents();
+
+      reverseGeocodingWorker.terminate();
+
+      setTimeout(() => {
+        this.loadingProgressObservable.next({
+          completed: true
+        });
+      }, 50);
     };
   }
 

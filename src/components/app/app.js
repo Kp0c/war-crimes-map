@@ -27,17 +27,18 @@ export class App extends HTMLElement {
   async connectedCallback() {
     const loadingProgressText = this.shadowRoot.getElementById('progress-text');
     this.#eventsService.loadingProgressObservable.subscribe((progress) => {
+      if (progress.completed) {
+        const spinner = this.shadowRoot.getElementById('spinner');
+        spinner.parentNode.removeChild(spinner);
+        return;
+      }
+
       if (typeof progress === 'string') {
         loadingProgressText.textContent = progress;
         return;
       }
 
-      loadingProgressText.textContent = `Geolocating cities: ${Formatter.formatNumber(progress.processed)} / ${Formatter.formatNumber(progress.total)}`;
-
-      if (progress.processed === progress.total) {
-        const spinner = this.shadowRoot.getElementById('spinner');
-        spinner.parentNode.removeChild(spinner);
-      }
+      loadingProgressText.textContent = `Geolocating cities: ${ Formatter.formatNumber(progress.processed) } / ${ Formatter.formatNumber(progress.total) }`;
     }, {
       signal: this.#abortController.signal,
       pushLatestValue: true,
