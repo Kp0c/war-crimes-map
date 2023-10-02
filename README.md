@@ -68,6 +68,7 @@ Few more general files:
   - Change "Map" button color to black to be visible on the white list view background
   - Allow moving the map by dragging on the mobile
   - Allow zooming the map by pinching on the mobile
+- Show spinner while data is loading
 
 ## Geocoding
 ### General
@@ -80,36 +81,17 @@ These files were created by taking the [geonames database](https://download.geon
 Ideally, it should be stored together with coordinates, but we cannot change the data inside `events.json`, so we have what we have :)
 
 ### Mapping lat/lng to the region/district/city
-With `geokdbush-tk`, `kdbush` libraries and data from geonames database, we can find the closest city/village to the lat/lng coordinates.
+Reverse geocoding is implemented in the web worker `src/workers/reverse-geocoding-worker.js` to not block the main thread.
+To geocode every point to the correct city, KD-tree is created from the list of all cities in Ukraine. 
+Then we iterate over all events and find the closest city to the event using [Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula).
+After that, we group events by the city, district and the region.
 
-## TODO
-- [x] Show a map on full Screen
-- [x] Add left sidebar UI
-- [x] Add right (empty for now) sidebar UI
-- [x] Add the search section UI
-- [x] Add the Filters section UI
-- [x] Add events to the map (The map displays all the data)
-- [x] Create grouping of events. Scale X -> show regions. Scale Y -> show ADM2, Scale Z -> show cities 
-- [x] Add the list of crime types at the bottom
-- [x] Show amount on the event
-- [x] Add Filters functionality (Working crime filter)
-- [x] Allow the map to be resized
-- [x] Create a List View
-- [x] Add Dots animation
-- [x] Add mobile design
-- [ ] Documentation
-- [x] Use correct fonts
-- [ ] Test deployment
-- [ ] (Optional) Get rid of geokdbush
-- [ ] (Optional) improve scaling
-- [ ] (Optional) extract data processing to the service worker to improve performance
+This process is time-consuming operation, so we show a spinner with a progress text while it is working.
 
 ## What I'd change if I had more time
 - I'd clusterize events smarter.
   Because we're clusterizing by the city, district, region, some dots are pretty far from their actual position until the user 
   zoom in
-- Improve performance of mapping. Not sure what we can do here, because we need to map tens of thousands events on tens of thousands cities. I think ideally 
-  it must be performed on the server side and be stored together with the events
 - Do better scaling. With the current scaling approach, zoomed in version looks very ugly
 - Add more unit tests to cover service and components logic
 

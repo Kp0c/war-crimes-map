@@ -8,6 +8,7 @@
 
 /**
  * @typedef {Object} Options
+ * @template T
  * @property {boolean} [pushLatestValue] - Whether to push the latest value to the subscriber
  * immediately.
  * @property {AbortSignal} [signal] - An abort controller signal to unsubscribe.
@@ -30,14 +31,22 @@ export class Observable {
 
   /**
    * @type {T} latest event
+   * @template T
    */
-  #latestValue
+  #latestValue;
+
+  /**
+   * @param {T} [initialValue] - The initial value of the observable.
+   */
+  constructor(initialValue) {
+    this.#latestValue = initialValue;
+  }
 
   /**
    * Subscribe to an event.
    *
    * @param {observableCallback} callback - The function to be called when the event is triggered.
-   *  @param {Options} [options] - Additional options for the subscription.
+   * @param {Options} [options] - Additional options for the subscription.
    */
   subscribe(callback, options) {
     this.#observers.push(callback);

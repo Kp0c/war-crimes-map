@@ -1,12 +1,7 @@
 import { Observable } from '../helpers/observable.js';
 import { SCALE } from '../enums.js';
-import KDBush from 'kdbush';
-import citiesLookup from '../assets/data/PPL.json'
-import districtsLookup from '../assets/data/ADM2.json'
-import regionsLookup from '../assets/data/ADM1.json'
-import { around } from 'geokdbush-tk';
-import { UNKNOWN_AFFECTED_TYPE } from '../constants.js';
-import { StatsHelper } from '../helpers/stats.helper.js';
+import citiesLookup from '../assets/data/PPL.json';
+import ReverseGeocodingWorker from '../workers/reverse-geocoding-worker.js?worker';
 
 /**
  * Crime Event Group
@@ -85,29 +80,34 @@ export class EventsService {
   /**
    * Observable that emits events that should be shown
    *
-   * @type {Observable<CrimeEventGroup>}
+   * @type {Observable<CrimeEventGroup[]>}
    */
-  shownEventsObservable = new Observable();
+  shownEventsObservable = new Observable([]);
 
   /**
    * Observable that emits all affected types
    *
    * @type {Observable<AffectedType[]>}
    */
-  affectedTypesObservable = new Observable();
+  affectedTypesObservable = new Observable([]);
 
   /**
    * Observable that emits all regions
    *
    * @type {Observable<Region[]>}
    */
-  regionsObservable = new Observable();
+  regionsObservable = new Observable([]);
 
   /**
    * Observable that emits individual events
    * @type {Observable<CrimeEvent>}
    */
-  individualEventsObservable = new Observable();
+  individualEventsObservable = new Observable([]);
+
+  /**
+   * Observable that emits loading progress
+   */
+  loadingProgressObservable = new Observable('Loading data');
 
   /**
    * @type {Record<string, string>}
@@ -138,13 +138,6 @@ export class EventsService {
   #currentScaleLevel = SCALE.REGION;
 
   /**
-   * KDBush cities index to use for searching
-   *
-   * @type {KDBush}
-   */
-  #citiesIndex = null;
-
-  /**
    * Filter
    * @type {Filter}
    */
@@ -156,13 +149,6 @@ export class EventsService {
   };
 
   constructor() {
-    this.#citiesIndex = new KDBush(citiesLookup.length);
-
-    citiesLookup.forEach((city) => {
-      this.#citiesIndex.add(city.lon, city.lat);
-    });
-
-    this.#citiesIndex.finish();
   }
 
   /**
@@ -206,167 +192,29 @@ export class EventsService {
 
     const data = await response.json();
 
-    const allEvents = Object.keys(data)
-      .flatMap((key) => data[key])
-      .filter((event) => event.lat && event.lon)
-      .map((event) => {
-        const nearestIndex = around(this.#citiesIndex, event.lon, event.lat, 100)[0];
-        const city = citiesLookup[nearestIndex];
+    const reverseGeocodingWorker = new ReverseGeocodingWorker();
 
-        return {
-          lat: event.lat,
-          lon: event.lon,
-          affectedType: event.affected_type ?? UNKNOWN_AFFECTED_TYPE,
-          name: this.#eventMapping[event.event] ?? 'UNKNOWN',
-          city: city.name,
-          cityLat: city.lat,
-          cityLon: city.lon,
-          districtCode: city.ADM2Code,
-          regionCode: city.ADM1Code
-        }
-      })
-      .filter((event) => !!event.city);
-
-    const cityGroups = this.#groupEventsByCity(allEvents);
-    const districtGroups = this.#groupCitiesByDistricts(cityGroups);
-    const regionGroups = this.#groupDistrictsByRegions(districtGroups);
-
-    this.#allEvents = allEvents;
-    this.#regions = regionGroups;
-
-    this.#pushRegions();
-    this.#pushAffectedTypes();
-    this.#pushNewEvents();
-  }
-
-  /**
-   * Groups events by city.
-   *
-   * @param {Array} events - Array of events to be grouped by city.
-   * @returns {Array<City>} - Array with cities
-   */
-  #groupEventsByCity(events) {
-    return events.reduce((acc, event) => {
-      const existing = acc.find((item) => item.city === event.city);
-
-      if (existing) {
-        existing.events.push(event);
-
-        if (event.affectedType) {
-          if (existing.stats[event.affectedType]) {
-            existing.stats[event.affectedType]++;
-          } else {
-            existing.stats[event.affectedType] = 1;
-          }
-        }
-      } else {
-        acc.push({
-          districtCode: event.districtCode,
-          regionCode: event.regionCode,
-          city: event.city,
-          lat: event.cityLat,
-          lon: event.cityLon,
-          events: [event],
-          stats: event.affectedType ? { [event.affectedType]: 1 } : {},
-        })
-      }
-
-      return acc;
-    }, []);
-  }
-
-  /**
-   * Groups cities by districts.
-   *
-   * @param {Object} cityGroups - An object containing city groups.
-   * @returns {Array<District>} - An array of districts with their corresponding cities.
-   */
-  #groupCitiesByDistricts(cityGroups) {
-    const districts = cityGroups.reduce((acc, city) => {
-      const { districtCode, regionCode } = city;
-
-      const existing = acc.find((item) => item.districtCode === districtCode);
-
-      if (existing) {
-        existing.cities.push(city);
-
-        if (city.stats) {
-          existing.stats = StatsHelper.mergeStats(existing.stats, city.stats);
-        }
-      } else {
-        acc.push({
-          districtCode,
-          regionCode,
-          cities: [city],
-          stats: city.stats,
-        });
-      }
-
-      return acc;
-    }, []);
-
-    districts.forEach((district) => {
-      const { districtCode } = district;
-
-      const lookupValue = districtsLookup.find((district) => district.ADM2Code === districtCode);
-
-      district.districtName = lookupValue?.name;
-      district.lat = lookupValue?.lat;
-      district.lon = lookupValue?.lon;
+    reverseGeocodingWorker.postMessage({
+      cities: citiesLookup,
+      points: data,
+      eventMapping: this.#eventMapping,
     });
 
-    return districts;
-  }
-
-  /**
-   * Groups district data by regions.
-   *
-   * @param {Array} districtGroups - An array containing district data grouped by district names.
-   * @returns {Array<Region>} - An array of regions with their corresponding district data.
-   */
-  #groupDistrictsByRegions(districtGroups) {
-    const regions = districtGroups.reduce((acc, district) => {
-      const { regionCode } = district;
-
-      const existing = acc.find((item) => item.regionCode === regionCode);
-
-      if (existing) {
-        existing.districts.push(district);
-
-        if (district.stats) {
-          existing.stats = StatsHelper.mergeStats(existing.stats, district.stats);
-        }
-      } else {
-        acc.push({
-          regionCode,
-          districts: [district],
-          stats: district.stats,
-        });
+    reverseGeocodingWorker.onmessage = (event) => {
+      if (event.data.progress || typeof event.data.progress === 'string') {
+        this.loadingProgressObservable.next(event.data.progress);
+        return;
       }
 
-      return acc;
-    }, []);
+      const { allEvents, regions } = event.data;
 
-    regions.forEach((region) => {
-      const { regionCode } = region;
+      this.#allEvents = allEvents;
+      this.#regions = regions;
 
-      const lookupValue = regionsLookup.find((region) => region.ADM1Code === regionCode);
-
-      region.regionName = lookupValue?.name;
-      region.lat = lookupValue?.lat;
-      region.lon = lookupValue?.lon;
-
-      // set regions to individual events as well
-      region.districts.forEach((district) => {
-        district.cities.forEach((city) => {
-          city.events.forEach((event) => {
-            event.regionName = region.regionName;
-          });
-        });
-      });
-    });
-
-    return regions;
+      this.#pushRegions();
+      this.#pushAffectedTypes();
+      this.#pushNewEvents();
+    };
   }
 
   /**

@@ -1,6 +1,16 @@
 import { Observable } from './observable.js';
 
 describe('Observable', () => {
+  describe('constructor', () => {
+    it('allows an initial value to be passed', () => {
+      const observable = new Observable('test');
+      const callback = vi.fn();
+      observable.subscribe(callback, { pushLatestValue: true });
+
+      expect(callback).toHaveBeenCalledWith('test');
+    });
+  });
+
   describe('subscribe', () => {
     it('adds a callback to the observers array', () => {
       const observable = new Observable();

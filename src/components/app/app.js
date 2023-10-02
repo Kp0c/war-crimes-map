@@ -3,6 +3,7 @@ import styles from './app.css?inline';
 import eventsUrl from '/src/assets/data/events.json?url';
 import namesUrl from '/src/assets/data/names.json?url';
 import { EventsService } from '../../services/events.service.js';
+import { Formatter } from '../../helpers/formatter.js';
 
 const templateElement = document.createElement('template');
 templateElement.innerHTML = template;
@@ -24,6 +25,24 @@ export class App extends HTMLElement {
   }
 
   async connectedCallback() {
+    const loadingProgressText = this.shadowRoot.getElementById('progress-text');
+    this.#eventsService.loadingProgressObservable.subscribe((progress) => {
+      if (typeof progress === 'string') {
+        loadingProgressText.textContent = progress;
+        return;
+      }
+
+      loadingProgressText.textContent = `Geolocating cities: ${Formatter.formatNumber(progress.processed)} / ${Formatter.formatNumber(progress.total)}`;
+
+      if (progress.processed === progress.total) {
+        const spinner = this.shadowRoot.getElementById('spinner');
+        spinner.parentNode.removeChild(spinner);
+      }
+    }, {
+      signal: this.#abortController.signal,
+      pushLatestValue: true,
+    });
+
     await this.#eventsService.init(eventsUrl, namesUrl).catch(console.error);
 
     window.addEventListener('hashchange', () => {

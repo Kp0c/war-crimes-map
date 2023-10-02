@@ -7,7 +7,7 @@ import {
   CRIME_TYPE_TO_COLOR_MAP,
   DIFFUSE_AMOUNT_PX,
   MAP_BOUNDARIES,
-  MAP_BOUNDARIES_RANGES
+  MAP_BOUNDARIES_RANGES, UNKNOWN_AFFECTED_TYPE
 } from '../../constants.js';
 import { MathHelper } from '../../helpers/math.helper.js';
 import { SCALE } from '../../enums.js';
@@ -412,29 +412,54 @@ export class Map extends HTMLElement {
     legend.innerHTML = '';
 
     this.#affectedTypes.forEach((affectedType) => {
-      // Create the outer div
-      const outerDiv = document.createElement('div');
-      outerDiv.classList.add('crime');
-
-      // Create the circle div
-      const circleDiv = document.createElement('div');
-      circleDiv.classList.add('circle');
-
-      circleDiv.style.backgroundColor = CRIME_TYPE_TO_COLOR_MAP[affectedType.affectedType];
-      circleDiv.style.border = CRIME_TYPE_BORDER_REQUIRED[affectedType.affectedType] ? '1px white solid' : '';
-
-      outerDiv.appendChild(circleDiv);
-
-      // Create the span element
-      const spanElement = document.createElement('span');
-      spanElement.textContent = affectedType.name;
-      outerDiv.appendChild(spanElement);
+      const item = this.#createLegendItem({
+        color: CRIME_TYPE_TO_COLOR_MAP[affectedType.affectedType],
+        border: CRIME_TYPE_BORDER_REQUIRED[affectedType.affectedType] ? '1px white solid' : '',
+        text: affectedType.name,
+      });
 
       // Append to the legend
-      legend.appendChild(outerDiv);
+      legend.appendChild(item);
     });
+
+    // add an unknown type
+    const unknownItem = this.#createLegendItem({
+      color: CRIME_TYPE_TO_COLOR_MAP[UNKNOWN_AFFECTED_TYPE],
+      border: '',
+      text: 'Unknown',
+    });
+    legend.appendChild(unknownItem);
 
     // set the legend height into root variable
     document.documentElement.style.setProperty('--legend-height', `${legend.offsetHeight}px`);
+  }
+
+  /**
+   * Creates a legend item with a colored circle and text.
+   *
+   * @param {string} color - The background color of the circle.
+   * @param {string} border - The border style of the circle.
+   * @param {string} text - The text content of the legend item.
+   * @return {HTMLElement} - The created legend item element.
+   */
+  #createLegendItem({color, border, text}) {
+    // Create the outer div
+    const outerDiv = document.createElement('div');
+    outerDiv.classList.add('crime');
+
+    // Create the circle div
+    const circleDiv = document.createElement('div');
+    circleDiv.classList.add('circle');
+
+    circleDiv.style.backgroundColor = color;
+    circleDiv.style.border = border;
+
+    outerDiv.appendChild(circleDiv);
+
+    // Create the span element
+    const spanElement = document.createElement('span');
+    spanElement.textContent = text;
+    outerDiv.appendChild(spanElement);
+    return outerDiv;
   }
 }

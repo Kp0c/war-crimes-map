@@ -14,9 +14,5 @@
     "msw": "^1.3.1",
     "vite": "^4.4.9",
     "vitest": "^0.34.6"
-  },
-  "dependencies": {
-    "geokdbush-tk": "^2.0.3",
-    "kdbush": "^4.0.2"
   }
 }
