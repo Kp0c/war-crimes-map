@@ -1,6 +1,5 @@
 import { Observable } from '../helpers/observable.js';
 import { SCALE } from '../enums.js';
-import citiesLookup from '../assets/data/PPL.json';
 import ReverseGeocodingWorker from '../workers/reverse-geocoding-worker.js?worker';
 
 /**
@@ -197,7 +196,6 @@ export class EventsService {
     const reverseGeocodingWorker = new ReverseGeocodingWorker();
 
     reverseGeocodingWorker.postMessage({
-      cities: citiesLookup,
       points: data,
       eventMapping: this.#eventMapping,
     });

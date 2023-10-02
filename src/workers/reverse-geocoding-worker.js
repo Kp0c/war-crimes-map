@@ -2,10 +2,10 @@ import { UNKNOWN_AFFECTED_TYPE } from '../constants.js';
 import { StatsHelper } from '../helpers/stats.helper';
 import districtsLookup from '../assets/data/ADM2.json';
 import regionsLookup from '../assets/data/ADM1.json';
+import citiesLookup from '../assets/data/PPL.json';
 
 onmessage = function(event) {
   const {
-    cities,
     eventMapping,
     points
   } = event.data;
@@ -14,7 +14,7 @@ onmessage = function(event) {
     progress: 'Building cities index...'
   })
 
-  const tree = buildKdTree(cities);
+  const tree = buildKdTree(citiesLookup);
 
   const allEvents = Object.keys(points)
     .flatMap((key) => points[key])
