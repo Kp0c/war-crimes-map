@@ -50,7 +50,7 @@ select {
   line-height: 24px;
   word-wrap: break-word;
 
-  background: url("src/assets/images/select-arrow.svg") no-repeat calc(100% - 0.75rem) center;
+  background: url("/images/select-arrow.svg") no-repeat calc(100% - 0.75rem) center;
   appearance: none;
 }
 
