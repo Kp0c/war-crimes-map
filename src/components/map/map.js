@@ -1,7 +1,14 @@
 import template from './map.html?raw';
 import styles from './map.css?inline';
 import mapUrl from '/src/assets/images/map.png';
-import { CRIME_TYPE_BORDER_REQUIRED, CRIME_TYPE_TO_COLOR_MAP, DIFFUSE_AMOUNT_PX, MAP_BOUNDARIES, MAP_BOUNDARIES_RANGES } from '../../constants.js';
+import {
+  ANIMATION_DURATION_MS,
+  CRIME_TYPE_BORDER_REQUIRED,
+  CRIME_TYPE_TO_COLOR_MAP,
+  DIFFUSE_AMOUNT_PX,
+  MAP_BOUNDARIES,
+  MAP_BOUNDARIES_RANGES
+} from '../../constants.js';
 import { MathHelper } from '../../helpers/math.helper.js';
 import { SCALE } from '../../enums.js';
 import { Formatter } from '../../helpers/formatter.js';
@@ -11,10 +18,12 @@ import { Formatter } from '../../helpers/formatter.js';
  * @typedef {Object} Dot
  * @property {number} x
  * @property {number} y
- * @property {number} size
  * @property {string} color
  * @property {boolean} borderRequired
- * @property {string} text
+ * @property {number} currentSize
+ * @property {number} desiredSize
+ * @property {number} currentAmount
+ * @property {number} desiredAmount
  */
 
 const templateElement = document.createElement('template');
@@ -80,6 +89,13 @@ export class Map extends HTMLElement {
    */
   #mapImg = null;
 
+  /**
+   * Timestamp of the animation start
+   *
+   * @type {number|null}
+   */
+  #animationStartTimestamp = null;
+
   constructor() {
     super();
 
@@ -102,6 +118,7 @@ export class Map extends HTMLElement {
   setEvents(events) {
     this.#events = events;
     this.#eventDots = this.#eventsToDots(this.#events);
+    this.#animationStartTimestamp = null;
     this.#render();
   }
 
@@ -138,6 +155,11 @@ export class Map extends HTMLElement {
       this.#setDefaultScale();
     }
 
+    if (!this.#animationStartTimestamp) {
+      this.#animationStartTimestamp = performance.now();
+    }
+    const animationProgress = Math.min((performance.now() - this.#animationStartTimestamp) / ANIMATION_DURATION_MS, 1);
+
     ctx.globalAlpha = 1;
 
     ctx.drawImage(this.#mapImg, 0, 0, this.#mapImg.width, this.#mapImg.height);
@@ -145,8 +167,11 @@ export class Map extends HTMLElement {
     ctx.globalAlpha = 0.7;
 
     this.#eventDots.forEach((dot) => {
+      dot.currentAmount = Math.round(MathHelper.lerp(dot.currentAmount, dot.desiredAmount, animationProgress));
+      dot.currentSize = MathHelper.lerp(dot.currentSize, dot.desiredSize, animationProgress);
+
       ctx.beginPath();
-      ctx.arc(dot.x, dot.y, dot.size, 0, 2 * Math.PI);
+      ctx.arc(dot.x, dot.y, dot.currentSize, 0, 2 * Math.PI);
       ctx.fillStyle = dot.color;
       ctx.fill();
 
@@ -160,10 +185,14 @@ export class Map extends HTMLElement {
       ctx.font = '9px e-Ukraine serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(dot.text, dot.x, dot.y);
+      ctx.fillText(Formatter.formatNumber(dot.currentAmount), dot.x, dot.y);
 
       ctx.closePath();
     });
+
+    if (animationProgress < 1) {
+      requestAnimationFrame(() => this.#render());
+    }
   }
 
   /**
@@ -186,10 +215,12 @@ export class Map extends HTMLElement {
         return {
           x: diffusedX,
           y: diffusedY,
-          size: Math.max(Math.log2(event.amount) * 2, 1),
+          currentSize: 0,
+          desiredSize: Math.max(Math.log2(event.amount) * 2, 1),
           color: CRIME_TYPE_TO_COLOR_MAP[event.affectedType],
           borderRequired: CRIME_TYPE_BORDER_REQUIRED[event.affectedType] ?? false,
-          text: Formatter.formatNumber(event.amount),
+          currentAmount: 0,
+          desiredAmount: event.amount,
         };
       });
   }

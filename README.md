@@ -56,6 +56,7 @@ Few more general files:
 - List view that shows individual crimes. It is limited by `MAX_LIST_RECORDS` records. If there are more than `MAX_LIST_RECORDS` records, then we show a text 
   that 
   asks user to use filters to see more precise results
+- Animates dots on the map
 
 ## Geocoding
 ### General
@@ -83,7 +84,7 @@ With `geokdbush-tk`, `kdbush` libraries and data from geonames database, we can 
 - [x] Add Filters functionality (Working crime filter)
 - [x] Allow the map to be resized
 - [x] Create a List View
-- [ ] Add Dots animation
+- [x] Add Dots animation
 - [ ] Add mobile design
 - [ ] Documentation
 - [x] Use correct fonts
@@ -93,10 +94,11 @@ With `geokdbush-tk`, `kdbush` libraries and data from geonames database, we can 
 - [ ] (Optional) extract data processing to the service worker to improve performance
 
 ## What I'd change if I had more time
-- I'd clusterize the events smarter.
+- I'd clusterize events smarter.
   Because we're clusterizing by the city, district, region, some dots are pretty far from their actual position until the user 
   zoom in
-- Improve performance of mapping. Not sure what we can do here, because we need to map tens of thousands events on tens of thousands cities.
+- Improve performance of mapping. Not sure what we can do here, because we need to map tens of thousands events on tens of thousands cities. I think ideally 
+  it must be performed on the server side and be stored together with the events
 - Do better scaling. With the current scaling approach, zoomed in version looks very ugly
 - Add more unit tests to cover service and components logic
 
@@ -106,6 +108,8 @@ With `geokdbush-tk`, `kdbush` libraries and data from geonames database, we can 
 3. Run `npm run dev`
 
 ## How to run test
-1. Run `npm run test`
+1. Clone the repo
+2. Run `npm install`
+3. Run `npm run test`
 
 Yeap, it is THAT simple :D

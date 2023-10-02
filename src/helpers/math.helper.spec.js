@@ -20,4 +20,24 @@ describe('MathHelper', () => {
       expect(result).toEqual(10);
     });
   });
+
+  describe('lerp', () => {
+    it('returns the value if the progress is 0', () => {
+      const result = MathHelper.lerp(0, 10, 0);
+
+      expect(result).toEqual(0);
+    });
+
+    it('returns the value if the progress is 1', () => {
+      const result = MathHelper.lerp(0, 10, 1);
+
+      expect(result).toEqual(10);
+    });
+
+    it('returns the interpolated value if the progress is between 0 and 1', () => {
+      const result = MathHelper.lerp(0, 10, 0.5);
+
+      expect(result).toEqual(5);
+    });
+  });
 });
