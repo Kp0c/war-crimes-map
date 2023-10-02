@@ -134,7 +134,7 @@ export class Filter extends HTMLElement {
 
     this.shadowRoot.getElementById('city').addEventListener('change', (event) => {
       this.#selectedCity = event.target.value;
-      const [regionCode, districtCode, cityName] = this.#selectedCity.split('-');
+      const [regionCode, districtCode, cityId] = this.#selectedCity.split('-');
 
       const currentRegion = this.#regions.find((region) => region.regionCode === regionCode);
 
@@ -146,7 +146,7 @@ export class Filter extends HTMLElement {
       }
 
       const currentDistrict = currentRegion.districts.find((district) => district.districtCode === districtCode);
-      const currentCity = currentDistrict.cities.find((city) => city.city === cityName);
+      const currentCity = currentDistrict.cities.find((city) => city.cityId === cityId);
 
       this.#currentStats = currentCity.stats;
       this.#renderStats();
@@ -167,12 +167,12 @@ export class Filter extends HTMLElement {
     });
 
     this.shadowRoot.getElementById('apply').addEventListener('click', () => {
-      const [regionCode, districtCode, cityName] = this.#selectedCity.split('-');
+      const [regionCode, districtCode, cityId] = this.#selectedCity.split('-');
       this.dispatchEvent(new CustomEvent('filter-change', {
         detail: {
           regionCode: this.#selectedRegionCode,
           districtCode,
-          cityName,
+          cityId,
           affectedTypes: this.#selectedCrimeTypes,
         },
       }));
@@ -340,7 +340,7 @@ export class Filter extends HTMLElement {
 
     allCities.sort().forEach((city) => {
       const option = document.createElement('option');
-      option.value = `${ city.regionCode }-${ city.districtCode }-${ city.city }`;
+      option.value = `${ city.regionCode }-${ city.districtCode }-${ city.cityId }`;
       option.textContent = city.city;
 
       cityOptions.appendChild(option);

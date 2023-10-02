@@ -20,6 +20,7 @@ import ReverseGeocodingWorker from '../workers/reverse-geocoding-worker.js?worke
  * @property {number} affectedType
  * @property {string} name
  * @property {string} city
+ * @property {string} cityId
  * @property {number} cityLat
  * @property {number} cityLon
  * @property {string} districtCode
@@ -60,6 +61,7 @@ import ReverseGeocodingWorker from '../workers/reverse-geocoding-worker.js?worke
  * City
  * @typedef {Object} City
  * @property {string} city
+ * @property {string} cityId
  * @property {number} lat
  * @property {number} lon
  * @property {Record<string, number>} stats
@@ -71,7 +73,7 @@ import ReverseGeocodingWorker from '../workers/reverse-geocoding-worker.js?worke
  * @typedef {Object} Filter
  * @property {string} [regionCode]
  * @property {string} [districtCode]
- * @property {string} [cityName]
+ * @property {string} [cityId]
  * @property {string[]} [affectedTypes]
  */
 
@@ -144,7 +146,7 @@ export class EventsService {
   #filter = {
     regionCode: null,
     districtCode: null,
-    cityName: null,
+    cityId: null,
     affectedTypes: [],
   };
 
@@ -232,7 +234,7 @@ export class EventsService {
 
     // if the user has already filtered the city, it makes very little sense to show district-level.
     // so we show city-level instead
-    if (filterAwareScaleLevel === SCALE.DISTRICT && this.#filter.cityName) {
+    if (filterAwareScaleLevel === SCALE.DISTRICT && this.#filter.cityId) {
       filterAwareScaleLevel = SCALE.CITY;
     }
 
@@ -270,7 +272,7 @@ export class EventsService {
       .filter((event) => {
         const isCorrectAffectedType = !this.#filter.affectedTypes.length || this.#filter.affectedTypes.includes(event.affectedType.toString());
         const isCorrectRegion = !this.#filter.regionCode || event.regionCode === this.#filter.regionCode;
-        const isCorrectCity = !this.#filter.cityName || event.city === this.#filter.cityName;
+        const isCorrectCity = !this.#filter.cityId || event.cityId === this.#filter.cityId;
         return isCorrectAffectedType && isCorrectRegion && isCorrectCity;
       });
 
@@ -294,7 +296,7 @@ export class EventsService {
         .flatMap((district) => {
         return district.cities
           .filter((city) => {
-            return !this.#filter.cityName || city.city === this.#filter.cityName;
+            return !this.#filter.cityId || city.cityId === this.#filter.cityId;
           })
           .map((city) => {
           const { lat, lon, stats } = city;

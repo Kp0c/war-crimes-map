@@ -123,12 +123,12 @@ export class App extends HTMLElement {
     const filterComponent = this.shadowRoot.querySelector('wcm-filter');
 
     filterComponent.addEventListener('filter-change', (event) => {
-      const { regionCode, districtCode, cityName, affectedTypes } = event.detail;
+      const { regionCode, districtCode, cityId, affectedTypes } = event.detail;
 
       this.#eventsService.setFilter({
         regionCode,
         districtCode,
-        cityName,
+        cityId,
         affectedTypes
       });
     });

@@ -38,6 +38,7 @@ onmessage = function(event) {
         lon: event.lon,
         affectedType: event.affected_type ?? UNKNOWN_AFFECTED_TYPE,
         name: eventMapping[event.event] ?? 'UNKNOWN',
+        cityId: city.id,
         city: city.name,
         cityLat: city.lat,
         cityLon: city.lon,
@@ -183,7 +184,7 @@ function nearestCity(node, point, depth = 0, best = null) {
  */
 function groupEventsByCity(events) {
   return events.reduce((acc, event) => {
-    const existing = acc.find((item) => item.city === event.city);
+    const existing = acc.find((item) => item.cityId === event.cityId);
 
     if (existing) {
       existing.events.push(event);
@@ -200,6 +201,7 @@ function groupEventsByCity(events) {
         districtCode: event.districtCode,
         regionCode: event.regionCode,
         city: event.city,
+        cityId: event.cityId,
         lat: event.cityLat,
         lon: event.cityLon,
         events: [event],
