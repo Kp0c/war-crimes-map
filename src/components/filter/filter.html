@@ -1,77 +1,79 @@
-<div class="search-container">
-  <div class="search-box">
-    <img src="/src/assets/images/search.svg" alt="">
-    <label for="search">
-      <input type="text" placeholder="Search" id="search">
-    </label>
-  </div>
-  <div class="filters-btn">
-    <svg width="27" height="27" viewBox="0 0 27 27" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <g id="icon">
-        <path id="Vector" d="M6.75 14.625H20.25V12.375H6.75V14.625ZM3.375 6.75V9H23.625V6.75H3.375ZM11.25 20.25H15.75V18H11.25V20.25Z" fill="currentColor"/>
-      </g>
-    </svg>
-    <span>Filters</span>
-  </div>
-</div>
-
-<hr>
-
-<div class="filters-main-container">
-  <h1>Filters</h1>
-
-  <div class="filters-container">
-    <section class="filter">
-      <h2>Crime Type</h2>
-      <div class="crime-types" id="stats">
-        <label for="crime-1" class="crime-field">
-          <input type="checkbox" name="murder" id="crime-1" checked>
-          <span class="crime-name">Murder</span>
-          <span class="spacer"></span>
-          <span class="crime-number">5 996</span>
-        </label>
-        <label for="crime-all" class="crime-field">
-          <input type="checkbox" name="murder" id="crime-all">
-          <span class="crime-name">All</span>
-        </label>
-      </div>
-    </section>
-
-    <section class="filter">
-      <h2>Region</h2>
-      <label for="region">
-        <select name="region" id="region">
-          <option value="">All States</option>
-        </select>
+<div class="page" id="filter-page-container">
+  <div class="search-container">
+    <div class="search-box">
+      <img src="/src/assets/images/search.svg" alt="">
+      <label for="search">
+        <input type="text" placeholder="Search" id="search">
       </label>
-    </section>
+    </div>
+    <div class="filters-btn" id="filters-btn">
+      <svg width="27" height="27" viewBox="0 0 27 27" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <g id="icon">
+          <path id="Vector" d="M6.75 14.625H20.25V12.375H6.75V14.625ZM3.375 6.75V9H23.625V6.75H3.375ZM11.25 20.25H15.75V18H11.25V20.25Z" fill="currentColor"/>
+        </g>
+      </svg>
+      <span>Filters</span>
+    </div>
+  </div>
 
-    <section class="filter">
-      <h2>City / Town</h2>
-      <label for="city">
-        <select name="City" id="city">
-          <option value="">All Cities / Towns</option>
-        </select>
-      </label>
-    </section>
+  <hr>
 
-    <section class="filter">
-      <div class="result">
-        <span>Results: </span> <span id="result-number">5 996</span>
+  <div class="filters-main-container">
+    <h1>Filters</h1>
+
+    <div class="filters-container">
+      <section class="filter">
+        <h2>Crime Type</h2>
+        <div class="crime-types" id="stats">
+          <label for="crime-1" class="crime-field">
+            <input type="checkbox" name="murder" id="crime-1" checked>
+            <span class="crime-name">Murder</span>
+            <span class="spacer"></span>
+            <span class="crime-number">5 996</span>
+          </label>
+          <label for="crime-all" class="crime-field">
+            <input type="checkbox" name="murder" id="crime-all">
+            <span class="crime-name">All</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="filter">
+        <h2>Region</h2>
+        <label for="region">
+          <select name="region" id="region">
+            <option value="">All States</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="filter">
+        <h2>City / Town</h2>
+        <label for="city">
+          <select name="City" id="city">
+            <option value="">All Cities / Towns</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="filter">
+        <div class="result">
+          <span>Results: </span> <span id="result-number">5 996</span>
+        </div>
+        <div class="chips" id="chips">
+          <div class="chip">Murder</div>
+          <div class="chip state">All States</div>
+          <div class="chip">All Cities / Towns</div>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button id="clear">
+          <img src="/src/assets/images/cross-circle.svg" alt="">
+          Clear All Filters
+        </button>
+        <button id="apply">Apply</button>
       </div>
-      <div class="chips" id="chips">
-        <div class="chip">Murder</div>
-        <div class="chip state">All States</div>
-        <div class="chip">All Cities / Towns</div>
-      </div>
-    </section>
-
-    <div class="actions">
-      <button id="clear">
-        <img src="/src/assets/images/cross-circle.svg" alt="">
-        Clear All Filters
-      </button>
-      <button id="apply">Apply</button>
     </div>
   </div>
 </div>

@@ -387,5 +387,8 @@ export class Map extends HTMLElement {
       // Append to the legend
       legend.appendChild(outerDiv);
     });
+
+    // set the legend height into root variable
+    document.documentElement.style.setProperty('--legend-height', `${legend.offsetHeight}px`);
   }
 }

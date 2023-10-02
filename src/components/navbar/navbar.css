@@ -24,3 +24,18 @@ nav svg {
 nav a.active svg {
   color: var(--primary-color)
 }
+
+@media (max-width: 1200px) {
+  .menu-button {
+    align-self: flex-start;
+    pointer-events: auto;
+  }
+
+  .logo {
+    pointer-events: auto;
+  }
+
+  .map-button svg {
+    color: black;
+  }
+}

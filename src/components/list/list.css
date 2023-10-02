@@ -54,3 +54,12 @@
   margin-top: 32px;
   text-align: center;
 }
+
+@media (max-width: 1200px) {
+  :host {
+    width: 100%;
+    height: calc(100% - var(--filter-height));
+    left: 0;
+    border-bottom: 1px var(--light-gray-color) solid;
+  }
+}

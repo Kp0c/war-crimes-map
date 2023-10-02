@@ -57,6 +57,15 @@ Few more general files:
   that 
   asks user to use filters to see more precise results
 - Animates dots on the map
+- Switch to the mobile design if the screen width is less than 1200
+  - Change navbar buttons location
+  - Change UA logo location
+  - Change filters location
+  - Open up filter on click
+  - Animate filter when it opens and closes
+  - Close filter when "Apply" button clicked
+  - Make list view look nice
+  - Change "Map" button color to black to be visible on the white list view background
 
 ## Geocoding
 ### General

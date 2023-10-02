@@ -9,8 +9,18 @@ wcm-navbar {
 
 wcm-filter {
   position: fixed;
-  height: 100%;
   width: var(--filter-width);
-  background-color: var(--background-white-color);
   right: 0;
+}
+
+@media (max-width: 1200px) {
+  wcm-navbar {
+    background-color: transparent;
+    pointer-events: none;
+    height: calc(100% - var(--filter-height) - var(--legend-height));
+  }
+
+  wcm-filter {
+    pointer-events: none;
+  }
 }

@@ -12,3 +12,14 @@
   --navbar-width: 60px;
   --filter-width: 35%;
 }
+
+@media (max-width: 1200px) {
+  :root {
+    --navbar-width: 100%;
+    --filter-width: 100%;
+
+    --filter-height: 10%;
+
+    --legend-height: 10%;
+  }
+}

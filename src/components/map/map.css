@@ -43,3 +43,12 @@ canvas {
   opacity: 0.90;
   border-radius: 9999px;
 }
+
+@media (max-width: 1200px) {
+  .legend {
+    width: 100%;
+    left: 0;
+    bottom: var(--filter-height);
+    padding: 0 16px 34px 16px;
+  }
+}

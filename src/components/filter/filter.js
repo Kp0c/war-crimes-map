@@ -64,6 +64,14 @@ export class Filter extends HTMLElement {
     shadow.appendChild(templateElement.content.cloneNode(true));
   }
 
+  connectedCallback() {
+    this.shadowRoot.getElementById('filters-btn').addEventListener('click', () => {
+      this.#toggleFullscreen();
+    }, {
+      signal: this.#destroyController.signal,
+    })
+  }
+
   disconnectedCallback() {
     this.#destroyController.abort();
   }
@@ -168,6 +176,8 @@ export class Filter extends HTMLElement {
           affectedTypes: this.#selectedCrimeTypes,
         },
       }));
+
+      this.#toggleFullscreen();
     });
   }
 
@@ -380,5 +390,12 @@ export class Filter extends HTMLElement {
     cityChip.className = 'chip';
     cityChip.textContent = this.#selectedCity?.split('-')[2] ?? 'All Cities / Towns';
     chipsContainer.appendChild(cityChip);
+  }
+
+  /**
+   * Toggles the fullscreen mode of the filter page container.
+   */
+  #toggleFullscreen() {
+    this.shadowRoot.getElementById('filter-page-container').classList.toggle('fullscreen');
   }
 }

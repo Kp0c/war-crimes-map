@@ -58,6 +58,26 @@ select {
   flex: 1;
 }
 
+.lg-spacer {
+  flex: 1;
+}
+
+@media (max-width: 1200px) {
+  .lg-spacer {
+    display: none;
+  }
+}
+
+.lg-block {
+  display: block;
+}
+
+@media (max-width: 1200px) {
+  .lg-block {
+    display: none;
+  }
+}
+
 .chip {
   padding: 4px 12px;
   background: var(--light-gray-color);

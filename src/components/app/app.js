@@ -42,10 +42,14 @@ export class App extends HTMLElement {
 
   #selectRoute() {
     const { hash } = window.location;
+    const location = hash.replace('#', '');
 
-    if (hash === '#list') {
+    if (location === 'list') {
+      // we need to adjust background color to white to avoid black gaps on rounded corners
+      document.body.style.backgroundColor = 'white';
       this.#showListView();
-    } else if (hash === '#map') {
+    } else if (location === 'map') {
+      document.body.style.backgroundColor = '';
       this.#showMapView();
     } else {
       // default route
