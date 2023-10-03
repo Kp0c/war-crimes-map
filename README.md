@@ -81,7 +81,8 @@ The solution is based on pure vanilla js with no libs using [Vite](https://vitej
 In the `/src/assets/data` folder, you can find the following files:
 - `ADM1.json` - first-order administrative division. A primary administrative division of a country, such as a state in the United States
 - `ADM2.json` - second-order administrative division. A subdivision of a first-order administrative division
-- `PPL.json` - populated place. A city, town, village, or another agglomeration of buildings where people live and work
+- `PPL.json` - populated place. A city, town, village, or another agglomeration of buildings where people live and work (in the database, corresponds to the 
+  union of PPL, PPLC, PPLA, PPLA2, PPLA3, PPLW)
 
 These files were created by taking the [geonames database](https://download.geonames.org/export/dump/) and converting them into better format for the project.
 Ideally, it should be stored together with coordinates, but we cannot change the data inside `events.json`, so we have what we have :)
