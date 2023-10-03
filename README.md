@@ -7,24 +7,32 @@ This project is a map of war crimes that the <sub><sup>r</sup></sub>ussia (terro
 ## Technical information
 The solution is based on pure vanilla js with no libs using [Vite](https://vitejs.dev/) as a bundler.
 
-I'm using component-based approach with custom elements. All components are in src/components folder.
-
-Components are using `wcm-` prefix that means "war crimes map."
-
-- The `wcm-app` component is the main component that is containing the whole app.
-- The `wcm-map` component is responsible for the map
-- The `wcm-navbar` component is responsible for the navigation bar
-- The `wcm-filter` component is responsible for the search and filter area
-- The `wcm-list` component is responsible for the list view of individual events
-
-Additional classes:
-- `helpers/observable.js` a small observable to add reactivity
-- `services/events.service.js` a service that is responsible for the work with events
-
-Few more general files:
-- `main.js` files defines all components
-- `constants.js` contains generic constants for the app.
-- `enums.js` contains enums
+## Project structure
+- `assets` - assets needed for the application
+- `components` - Project is using component-based approach with custom elements. Components are using `wcm-` prefix that means "war crimes map."
+  - The `wcm-app` component is the main component that is containing the whole app, router, and orchestrates the data.
+  - The `wcm-map` component is responsible for the map
+  - The `wcm-navbar` component is responsible for the navigation bar
+  - The `wcm-filter` component is responsible for the search and filter area
+  - The `wcm-list` component is responsible for the list view of individual events
+- `helpers` - Helper classes
+  - `formatter` - Helper class to format things into strings
+  - `math.helper` - Math functions that are not defined in the default Math class
+  - `observable` - Observable implementation to add reactivity to the app
+  - `stats.helper` - Helper class that helps working with stats information
+- `services` - Services
+  - `events.service` - Service that is responsible for the work with events. It is the source of truth for the events and fires new events when something is 
+    changed
+- `styles` - additional styles
+  - `common` - styles that are common for the app and most likely needed in most/all components
+  - `variables` - variables that are used in css
+- `workers` - Web Workers
+  - `reverse-geocoding-worker` - Web Worker that is responsible for the reverse geocoding and grouping events by cities, districts and regions. It is 
+    implemented as a web worker to not block the main thread
+- `constants.js` - contains generic constants for the app.
+- `main.js` - file defines all components
+- `main.css` - main css file that defines some top-level styles and fonts
+- `enums.js` - enums ¯\_(ツ)_/¯
 
 ## Available functionality
 - Showing a map of Ukraine
@@ -37,8 +45,7 @@ Few more general files:
   - **Be aware!** Filters overrides zoom settings. So, if you filtered by the city, you will see city-level events, even if you zoomed out. Or if you 
     filtered by the region - you will see district-level events, even if you zoomed out. But zoom in will work as expected.
 - Show different events in different colors on map
-- On loading we take a bit more time to map all events to the cities, districts and regions. So, when user started to use applciation he 
-  will see no lags.
+- Load data and map data inside Web Worker, so it will not block the main thread and we can show a spinner while it is loading.
 - Show the legend at the bottom of the map
 - Show count of events on the dot with the thousands' space separator
 - Allow to filter events by:
@@ -68,11 +75,10 @@ Few more general files:
   - Change "Map" button color to black to be visible on the white list view background
   - Allow moving the map by dragging on the mobile
   - Allow zooming the map by pinching on the mobile
-- Show spinner while data is loading
 
 ## Geocoding
 ### General
-In the `data` folder, you can find the following files:
+In the `/src/assets/data` folder, you can find the following files:
 - `ADM1.json` - first-order administrative division. A primary administrative division of a country, such as a state in the United States
 - `ADM2.json` - second-order administrative division. A subdivision of a first-order administrative division
 - `PPL.json` - populated place. A city, town, village, or another agglomeration of buildings where people live and work
@@ -91,10 +97,14 @@ This process is time-consuming operation, so we show a spinner with a progress t
 ## What I'd change if I had more time
 - I'd clusterize events smarter.
   Because we're clusterizing by the city, district, region, some dots are pretty far from their actual position until the user 
-  zoom in
+  zooms in
 - Do better scaling. With the current scaling approach, zoomed in version looks very ugly
 - Optimize performance when user zoomed-in too much and show only what is visible on the screen
 - Add more unit tests to cover service and components logic
+- Current approach to mapping is not the best. For the very large cities, it can map events on the outskirts of the city to villages near the city.
+  - Possible fixes:
+    - Use the proper service to accurately map events beforehand and store this information in the database (is not applicable to the challenge)
+    - Count in the size of the city when calculating the distance to the city
 
 ## How to run
 1. Clone the repo
@@ -105,5 +115,3 @@ This process is time-consuming operation, so we show a spinner with a progress t
 1. Clone the repo
 2. Run `npm install`
 3. Run `npm run test`
-
-Yeap, it is THAT simple :D
