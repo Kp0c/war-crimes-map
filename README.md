@@ -19,7 +19,7 @@ The solution is based on pure vanilla js with no libs using [Vite](https://vitej
   - `formatter` - Helper class to format things into strings
   - `math.helper` - Math functions that are not defined in the default Math class
   - `observable` - Observable implementation to add reactivity to the app
-  - `stats.helper` - Helper class that helps working with stats information
+  - `stats.helper` - Helper class that helps to work with stats' information
 - `services` - Services
   - `events.service` - Service that is responsible for the work with events. It is the source of truth for the events and fires new events when something is 
     changed
@@ -37,28 +37,28 @@ The solution is based on pure vanilla js with no libs using [Vite](https://vitej
 ## Available functionality
 - Showing a map of Ukraine
   - Map can be resized by the mouse wheel. It will zoom into the position of your mouse
-  - Map can be moved by dragging
+  - The Map can be moved by dragging
 - Show events on the map and group them depending on the scale:
   - When it is a small scale, it shows regions
   - When it is a medium scale, it shows districts
   - When it is a large scale, it shows cities
   - **Be aware!** Filters overrides zoom settings. So, if you filtered by the city, you will see city-level events, even if you zoomed out. Or if you 
     filtered by the region - you will see district-level events, even if you zoomed out. But zoom in will work as expected.
-- Show different events in different colors on map
-- Load data and map data inside Web Worker, so it will not block the main thread and we can show a spinner while it is loading.
+- Show different events in different colors on the map
+- Load data and map data inside Web Worker, so it will not block the main thread, and we can show a spinner while it is loading.
 - Show the legend at the bottom of the map
 - Show count of events on the dot with the thousands' space separator
-- Allow to filter events by:
+- Allow filtering events by:
   - crime type
   - region
   - city
-- Make filter fields to work reactive with each other, for example:
+- Make filter fields to work reactively with each other, for example:
   - If you select a region, the city field will be populated with cities from this region
   - If you select a city, the region field will be populated with the region of this city
   - If you select a city, crime type area will be populated with crime types that are present in this city
   - etc.
 - Show how many events are filtered
-- Allow to clear the filter
+- Allow clearing the filter
 - On apply - filter the map
 - List view that shows individual crimes. It is limited by `MAX_LIST_RECORDS` records. If there are more than `MAX_LIST_RECORDS` records, then we show a text 
   that 
@@ -72,7 +72,7 @@ The solution is based on pure vanilla js with no libs using [Vite](https://vitej
   - Animate filter when it opens and closes
   - Close filter when "Apply" button clicked
   - Make list view look nice
-  - Change "Map" button color to black to be visible on the white list view background
+  - Change "Map" button color to black to be visible on the white-colored list view background
   - Allow moving the map by dragging on the mobile
   - Allow zooming the map by pinching on the mobile
 
@@ -93,16 +93,16 @@ To geocode every point to the correct city, KD-tree is created from the list of 
 Then we iterate over all events and find the closest city to the event using [Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula).
 After that, we group events by the city, district and the region.
 
-This process is time-consuming operation, so we show a spinner with a progress text while it is working.
+This process is a time-consuming operation, so we show a spinner with a progress text while it is working.
 
 ## What I'd change if I had more time
 - I'd clusterize events smarter.
   Because we're clusterizing by the city, district, region, some dots are pretty far from their actual position until the user 
   zooms in
-- Do better scaling. With the current scaling approach, zoomed in version looks very ugly
-- Optimize performance when user zoomed-in too much and show only what is visible on the screen
+- Do better scaling. With the current scaling approach, zoomed in version looks hideous
+- Optimize performance when user zoomed in too much and show only what is visible on the screen
 - Add more unit tests to cover service and components logic
-- Current approach to mapping is not the best. For the very large cities, it can map events on the outskirts of the city to villages near the city.
+- The Current approach to mapping is not the best. For the huge cities, it can map events on the outskirts of the city to villages near the city.
   - Possible fixes:
     - Use the proper service to accurately map events beforehand and store this information in the database (is not applicable to the challenge)
     - Count in the size of the city when calculating the distance to the city
