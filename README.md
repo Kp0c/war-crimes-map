@@ -1,5 +1,6 @@
 # War Crimes Map
 Created for Dev Challenge XX
+
 Deployed app: https://war-crimes-map.vercel.app/
 
 ## Description
